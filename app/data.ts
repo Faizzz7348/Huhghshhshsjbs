@@ -5,6 +5,9 @@ export type Delivery = {
   delivery: string
   lat: number
   lng: number
+  color?: string
+  powerMode?: 'on' | 'off' | null
+  descriptionsObj?: Record<string, string>
 }
 
 export const deliveries: Delivery[] = [
@@ -15,6 +18,7 @@ export const deliveries: Delivery[] = [
     delivery: "Daily",
     lat: 3.1319,
     lng: 101.5841,
+    color: "#3b82f6",
   },
   {
     id: 2,
@@ -23,6 +27,7 @@ export const deliveries: Delivery[] = [
     delivery: "Weekly",
     lat: 2.7258,
     lng: 101.9424,
+    color: "#ef4444",
   },
   {
     id: 3,
@@ -31,6 +36,7 @@ export const deliveries: Delivery[] = [
     delivery: "Daily",
     lat: 4.5975,
     lng: 101.0901,
+    color: "#10b981",
   },
   {
     id: 4,
@@ -39,6 +45,7 @@ export const deliveries: Delivery[] = [
     delivery: "Monthly",
     lat: 1.4927,
     lng: 103.7414,
+    color: "#f59e0b",
   },
   {
     id: 5,
@@ -47,6 +54,7 @@ export const deliveries: Delivery[] = [
     delivery: "Daily",
     lat: 5.4164,
     lng: 100.3327,
+    color: "#8b5cf6",
   },
   {
     id: 6,
@@ -55,6 +63,7 @@ export const deliveries: Delivery[] = [
     delivery: "Weekly",
     lat: 2.1896,
     lng: 102.2501,
+    color: "#ec4899",
   },
   {
     id: 7,
@@ -63,6 +72,7 @@ export const deliveries: Delivery[] = [
     delivery: "Daily",
     lat: 3.8077,
     lng: 103.326,
+    color: "#06b6d4",
   },
   {
     id: 8,
@@ -71,5 +81,6 @@ export const deliveries: Delivery[] = [
     delivery: "Monthly",
     lat: 3.0447,
     lng: 101.4458,
+    color: "#84cc16",
   },
 ]

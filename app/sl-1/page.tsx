@@ -21,7 +21,7 @@ import { locations, Location } from "./locations"
 import { Eye, EyeOff } from "lucide-react"
 import dynamic from "next/dynamic"
 import { DataTable } from "@/components/data-table"
-import { deliveries, Delivery } from "@/app/data"
+import { Delivery } from "@/app/data"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -46,13 +46,16 @@ const MapComponent = dynamic(
   }
 )
 
-export default function KL7Page() {
+// Empty deliveries data for SL 1
+const sl1Deliveries: Delivery[] = []
+
+export default function SL1Page() {
   const [selectedLocation, setSelectedLocation] = useState<typeof locations[0] | null>(null)
   const [showMap, setShowMap] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<Delivery | null>(null)
   const [deliveryData, setDeliveryData] = useState<Delivery[]>(
-    [...deliveries].sort((a, b) => a.code - b.code)
+    [...sl1Deliveries].sort((a, b) => a.code - b.code)
   )
 
   // Function to find location by name and fly to it
@@ -127,7 +130,7 @@ export default function KL7Page() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>KL 7</BreadcrumbPage>
+                <BreadcrumbPage>SL 1</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

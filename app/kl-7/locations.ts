@@ -5,6 +5,7 @@ export type Location = {
   lat: number
   lng: number
   delivery: string
+  color?: string
 }
 
 export const locations: Location[] = [
@@ -15,6 +16,7 @@ export const locations: Location[] = [
     lat: 3.1319,
     lng: 101.5841,
     delivery: "Daily",
+    color: "#3b82f6",
   },
   {
     id: 2,
@@ -23,6 +25,7 @@ export const locations: Location[] = [
     lat: 2.7258,
     lng: 101.9424,
     delivery: "Weekly",
+    color: "#ef4444",
   },
   {
     id: 3,
@@ -31,6 +34,7 @@ export const locations: Location[] = [
     lat: 4.5975,
     lng: 101.0901,
     delivery: "Daily",
+    color: "#10b981",
   },
   {
     id: 4,
@@ -39,6 +43,7 @@ export const locations: Location[] = [
     lat: 1.4927,
     lng: 103.7414,
     delivery: "Monthly",
+    color: "#f59e0b",
   },
   {
     id: 5,
@@ -47,6 +52,7 @@ export const locations: Location[] = [
     lat: 5.4164,
     lng: 100.3327,
     delivery: "Daily",
+    color: "#8b5cf6",
   },
   {
     id: 6,
@@ -55,6 +61,7 @@ export const locations: Location[] = [
     lat: 2.1896,
     lng: 102.2501,
     delivery: "Weekly",
+    color: "#ec4899",
   },
   {
     id: 7,
@@ -63,6 +70,7 @@ export const locations: Location[] = [
     lat: 3.8077,
     lng: 103.326,
     delivery: "Daily",
+    color: "#06b6d4",
   },
   {
     id: 8,
@@ -71,5 +79,6 @@ export const locations: Location[] = [
     lat: 3.0447,
     lng: 101.4458,
     delivery: "Monthly",
+    color: "#84cc16",
   },
 ]

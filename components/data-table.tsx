@@ -15,7 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings } from "lucide-react"
+import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -45,20 +45,28 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 import { Delivery } from "@/app/data"
+import { PowerModeModal } from "@/components/power-mode-modal"
+import { InfoModal } from "@/components/info-modal"
 
 interface DataTableProps {
   data: Delivery[]
   onLocationClick?: (locationName: string) => void
+  onEditRow?: (rowId: number) => void
   showMap?: boolean
 }
 
-export function DataTable({ data, onLocationClick, showMap = true }: DataTableProps) {
-  "use no memo"
+export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: DataTableProps) {
+  'use no memo'
   
-  const [editingCell, setEditingCell] = React.useState<{ rowId: string; columnId: string } | null>(null)
   const [tableData, setTableData] = React.useState<Delivery[]>(data)
   const [columnDialogOpen, setColumnDialogOpen] = React.useState(false)
   const [rowDialogOpen, setRowDialogOpen] = React.useState(false)
+  const [addRowDialogOpen, setAddRowDialogOpen] = React.useState(false)
+  const [powerModalOpen, setPowerModalOpen] = React.useState(false)
+  const [selectedPowerRow, setSelectedPowerRow] = React.useState<Delivery | null>(null)
+  const [infoModalOpen, setInfoModalOpen] = React.useState(false)
+  const [selectedInfoRow, setSelectedInfoRow] = React.useState<Delivery | null>(null)
+  const [newRowData, setNewRowData] = React.useState({ code: "", location: "", delivery: "" })
   const [rowCount, setRowCount] = React.useState(data.length)
   const [tempRowData, setTempRowData] = React.useState<Delivery[]>([])
   const [orderInputs, setOrderInputs] = React.useState<{ [key: number]: string }>({})
@@ -140,18 +148,19 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
     setRowDialogOpen(false)
   }
 
-  const updateData = (rowId: string, columnId: string, value: any) => {
-    setTableData((old) =>
-      old.map((row) => {
-        if (String(row.id) === rowId) {
-          return {
-            ...row,
-            [columnId]: columnId === "code" ? Number(value) : value,
-          }
-        }
-        return row
-      })
-    )
+  const handleAddNewRow = () => {
+    const newId = Math.max(...tableData.map(row => row.id), 0) + 1
+    const newRow: Delivery = {
+      id: newId,
+      code: parseInt(newRowData.code) || 0,
+      location: newRowData.location,
+      delivery: newRowData.delivery,
+      lat: 0,
+      lng: 0,
+    }
+    setTableData([...tableData, newRow])
+    setNewRowData({ code: "", location: "", delivery: "" })
+    setAddRowDialogOpen(false)
   }
 
   const columns: ColumnDef<Delivery>[] = [
@@ -174,40 +183,9 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
           accessorKey: "code",
           header: () => <div className="text-center">Code</div>,
           cell: ({ row }) => {
-            const rowId = row.id
-            const columnId = "code"
-            const isEditing = editingCell?.rowId === rowId && editingCell?.columnId === columnId
             const value = row.getValue("code")
-
-            if (isEditing) {
-              return (
-                <input
-                  type="number"
-                  defaultValue={value as number}
-                  className="w-full text-center bg-transparent focus:outline-none"
-                  autoFocus
-                  onBlur={(e) => {
-                    updateData(rowId, columnId, e.target.value)
-                    setEditingCell(null)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      updateData(rowId, columnId, e.currentTarget.value)
-                      setEditingCell(null)
-                    }
-                    if (e.key === "Escape") {
-                      setEditingCell(null)
-                    }
-                  }}
-                />
-              )
-            }
-
             return (
-              <div 
-                className="text-center cursor-pointer hover:bg-muted/50 p-2 rounded"
-                onClick={() => setEditingCell({ rowId, columnId })}
-              >
+              <div className="text-center p-2">
                 {value as number}
               </div>
             )
@@ -218,48 +196,18 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
           accessorKey: "location",
           header: () => <div className="text-center">Location</div>,
           cell: ({ row, table }) => {
-            const rowId = row.id
-            const columnId = "location"
-            const isEditing = editingCell?.rowId === rowId && editingCell?.columnId === columnId
             const locationName = row.getValue("location") as string
             const onLocationClick = (table.options.meta as any)?.onLocationClick
             const showMap = (table.options.meta as any)?.showMap
-
-            if (isEditing) {
-              return (
-                <input
-                  type="text"
-                  defaultValue={locationName}
-                  className="w-full text-center bg-transparent focus:outline-none"
-                  autoFocus
-                  onBlur={(e) => {
-                    updateData(rowId, columnId, e.target.value)
-                    setEditingCell(null)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      updateData(rowId, columnId, e.currentTarget.value)
-                      setEditingCell(null)
-                    }
-                    if (e.key === "Escape") {
-                      setEditingCell(null)
-                    }
-                  }}
-                />
-              )
-            }
             
             return (
               <div 
-                className={`text-center p-2 rounded ${showMap ? 'cursor-pointer hover:text-primary hover:underline' : 'cursor-pointer hover:bg-muted/50'} transition-colors`}
+                className={`text-center p-2 rounded ${showMap ? 'cursor-pointer hover:text-primary hover:underline' : ''} transition-colors`}
                 onClick={() => {
                   if (showMap) {
                     onLocationClick?.(locationName)
-                  } else {
-                    setEditingCell({ rowId, columnId })
                   }
                 }}
-                onDoubleClick={() => setEditingCell({ rowId, columnId })}
               >
                 {locationName}
               </div>
@@ -271,44 +219,9 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
           accessorKey: "delivery",
           header: () => <div className="text-center">Delivery</div>,
           cell: ({ row }) => {
-            const rowId = row.id
-            const columnId = "delivery"
-            const isEditing = editingCell?.rowId === rowId && editingCell?.columnId === columnId
             const value = row.getValue("delivery")
-
-            if (isEditing) {
-              return (
-                <select
-                  defaultValue={value as string}
-                  className="w-full text-center bg-background focus:outline-none cursor-pointer px-2 py-1"
-                  style={{ textAlignLast: 'center' }}
-                  autoFocus
-                  onChange={(e) => {
-                    updateData(rowId, columnId, e.target.value)
-                    setEditingCell(null)
-                  }}
-                  onBlur={() => {
-                    setEditingCell(null)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") {
-                      setEditingCell(null)
-                    }
-                  }}
-                >
-                  <option value="Daily" className="text-center">Daily</option>
-                  <option value="Weekday" className="text-center">Weekday</option>
-                  <option value="Alt 1" className="text-center">Alt 1</option>
-                  <option value="Alt 2" className="text-center">Alt 2</option>
-                </select>
-              )
-            }
-
             return (
-              <div 
-                className="text-center cursor-pointer hover:bg-muted/50 p-2 rounded"
-                onClick={() => setEditingCell({ rowId, columnId })}
-              >
+              <div className="text-center p-2">
                 {value as string}
               </div>
             )
@@ -320,22 +233,39 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
       id: "actions",
       enableHiding: false,
       header: () => <div className="text-center">Action</div>,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const delivery = row.original
+        const onEditRow = (table.options.meta as any)?.onEditRow
 
         return (
           <div className="flex justify-center gap-2">
             <button
-              onClick={() => console.log("Info clicked:", delivery)}
+              onClick={() => onEditRow?.(delivery.id)}
+              className="p-1 hover:text-primary transition-colors"
+              title="Edit Row"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => {
+                setSelectedInfoRow(delivery)
+                setInfoModalOpen(true)
+              }}
               className="p-1 hover:text-primary transition-colors"
               title="Info"
             >
               <Info className="h-4 w-4" />
             </button>
             <button
-              onClick={() => console.log("Power off clicked:", delivery)}
-              className="p-1 hover:text-destructive transition-colors"
-              title="Power Off"
+              onClick={() => {
+                setSelectedPowerRow(delivery)
+                setPowerModalOpen(true)
+              }}
+              className="p-1 transition-colors"
+              title={delivery.powerMode === 'on' ? 'Power ON' : delivery.powerMode === 'off' ? 'Power OFF' : 'Power Mode'}
+              style={{
+                color: delivery.powerMode === 'on' ? '#22c55e' : delivery.powerMode === 'off' ? '#ef4444' : '#94a3b8'
+              }}
             >
               <Power className="h-4 w-4" />
             </button>
@@ -365,7 +295,7 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    enableSorting: false,
+    enableSorting: true,
     state: {
       sorting,
       columnFilters,
@@ -374,6 +304,7 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
     },
     meta: {
       onLocationClick,
+      onEditRow,
       showMap,
     },
   })
@@ -401,6 +332,12 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
               className="text-center justify-center cursor-pointer"
             >
               Row Settings
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              onSelect={() => setAddRowDialogOpen(true)}
+              className="text-center justify-center cursor-pointer"
+            >
+              Add New Row
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -490,14 +427,14 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
           </DialogHeader>
           <div className="space-y-4 py-4">
             {columnSettings.map((col, index) => (
-              <div key={col.id} className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div key={col.id} className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/30 transition-all duration-200">
                 <div className="flex items-center gap-3">
                   <Checkbox 
                     id={col.id}
                     checked={col.visible}
                     onCheckedChange={() => toggleColumnVisibility(col.id)}
                   />
-                  <Label htmlFor={col.id} className="cursor-pointer font-normal">
+                  <Label htmlFor={col.id} className="cursor-pointer font-normal text-xs">
                     {col.label}
                   </Label>
                 </div>
@@ -530,9 +467,65 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
         </DialogContent>
       </Dialog>
 
+      {/* Add New Row Dialog */}
+      <Dialog open={addRowDialogOpen} onOpenChange={setAddRowDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Row</DialogTitle>
+            <DialogDescription>
+              Enter the details for the new row.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="code">Code</Label>
+              <Input
+                id="code"
+                type="number"
+                value={newRowData.code}
+                onChange={(e) => setNewRowData({ ...newRowData, code: e.target.value })}
+                placeholder="Enter code"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={newRowData.location}
+                onChange={(e) => setNewRowData({ ...newRowData, location: e.target.value })}
+                placeholder="Enter location"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="delivery">Delivery</Label>
+              <Input
+                id="delivery"
+                value={newRowData.delivery}
+                onChange={(e) => setNewRowData({ ...newRowData, delivery: e.target.value })}
+                placeholder="Enter delivery"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setAddRowDialogOpen(false)
+              setNewRowData({ code: "", location: "", delivery: "" })
+            }}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddNewRow}
+              disabled={!newRowData.code || !newRowData.location || !newRowData.delivery}
+            >
+              Add Row
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Row Settings Dialog */}
       <Dialog open={rowDialogOpen} onOpenChange={setRowDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
+        <DialogContent className="max-w-6xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Row Settings</DialogTitle>
             <DialogDescription>
@@ -540,6 +533,49 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
+            {/* Row Reorder Preview */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Reorder Rows</Label>
+              <p className="text-xs text-muted-foreground">
+                Enter order number (1-{tempRowData.length}) to reorder rows. Changes will apply after clicking Apply button.
+              </p>
+              <div className="max-h-[400px] overflow-auto rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-center w-[120px] text-xs">Order</TableHead>
+                      <TableHead className="text-center w-[150px] text-xs">Code</TableHead>
+                      <TableHead className="text-center w-[300px] text-xs">Location</TableHead>
+                      <TableHead className="text-center w-[250px] text-xs">Delivery</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tempRowData.map((row, index) => (
+                      <TableRow key={row.id}>
+                        <TableCell className="text-center w-[120px]">
+                          <Input
+                            type="number"
+                            value={orderInputs[index] || ''}
+                            onChange={(e) => handleOrderChange(index, e.target.value)}
+                            onBlur={() => handleOrderBlur(index)}
+                            placeholder={(index + 1).toString()}
+                            className="w-[70px] text-center text-xs h-8"
+                            min={1}
+                            max={tempRowData.length}
+                          />
+                        </TableCell>
+                        <TableCell className="text-center text-xs w-[150px]">{row.code}</TableCell>
+                        <TableCell className="text-center text-xs w-[300px]">{row.location}</TableCell>
+                        <TableCell className="text-center text-xs w-[250px]">{row.delivery}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="border-t" />
+
             {/* Row Count Control */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Number of Rows</Label>
@@ -552,18 +588,6 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <div className="px-6 py-2 text-2xl font-bold border-2 rounded-lg min-w-[100px] text-center">
-                  {rowCount}
-                </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => adjustRowCount('up')}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex justify-center">
                 <Input
                   type="number"
                   value={rowCount}
@@ -572,49 +596,13 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
                   min={1}
                   max={1000}
                 />
-              </div>
-            </div>
-
-            <div className="border-t" />
-
-            {/* Row Reorder Preview */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Reorder Rows</Label>
-              <p className="text-sm text-muted-foreground">
-                Enter order number (1-{tempRowData.length}) to reorder rows. Changes will apply after clicking Apply button.
-              </p>
-              <div className="max-h-[400px] overflow-auto rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-center w-[90px]">Order</TableHead>
-                      <TableHead className="text-center">Code</TableHead>
-                      <TableHead className="text-center">Location</TableHead>
-                      <TableHead className="text-center">Delivery</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {tempRowData.map((row, index) => (
-                      <TableRow key={row.id}>
-                        <TableCell className="text-center">
-                          <Input
-                            type="number"
-                            value={orderInputs[index] || ''}
-                            onChange={(e) => handleOrderChange(index, e.target.value)}
-                            onBlur={() => handleOrderBlur(index)}
-                            placeholder={(index + 1).toString()}
-                            className="w-[50px] text-center text-xs h-8"
-                            min={1}
-                            max={tempRowData.length}
-                          />
-                        </TableCell>
-                        <TableCell className="text-center text-sm">{row.code}</TableCell>
-                        <TableCell className="text-center text-sm">{row.location}</TableCell>
-                        <TableCell className="text-center text-sm">{row.delivery}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => adjustRowCount('up')}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </div>
@@ -628,6 +616,42 @@ export function DataTable({ data, onLocationClick, showMap = true }: DataTablePr
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Power Mode Modal */}
+      <PowerModeModal
+        visible={powerModalOpen}
+        onHide={() => {
+          setPowerModalOpen(false)
+          setSelectedPowerRow(null)
+        }}
+        rowData={selectedPowerRow}
+        onSave={(newMode) => {
+          if (selectedPowerRow) {
+            const updatedData = tableData.map((row) =>
+              row.id === selectedPowerRow.id ? { ...row, powerMode: newMode as 'on' | 'off' | null } : row
+            )
+            setTableData(updatedData)
+          }
+        }}
+      />
+
+      {/* Info Modal */}
+      <InfoModal
+        visible={infoModalOpen}
+        onHide={() => {
+          setInfoModalOpen(false)
+          setSelectedInfoRow(null)
+        }}
+        rowData={selectedInfoRow}
+        onSave={(descriptionsObj) => {
+          if (selectedInfoRow) {
+            const updatedData = tableData.map((row) =>
+              row.id === selectedInfoRow.id ? { ...row, descriptionsObj } : row
+            )
+            setTableData(updatedData)
+          }
+        }}
+      />
     </div>
   )
 }
