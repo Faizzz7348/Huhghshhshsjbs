@@ -139,7 +139,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 item.items?.length ? (
                   <Collapsible
                     key={item.title}
-                    defaultOpen={index === 1}
+                    defaultOpen={false}
                     className="group/collapsible"
                   >
                     <SidebarMenuItem>

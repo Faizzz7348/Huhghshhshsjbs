@@ -11,11 +11,10 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit } from "lucide-react"
+import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -135,6 +134,8 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
   const [selectedPowerRow, setSelectedPowerRow] = React.useState<Delivery | null>(null)
   const [infoModalOpen, setInfoModalOpen] = React.useState(false)
   const [selectedInfoRow, setSelectedInfoRow] = React.useState<Delivery | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+  const [selectedDeleteRow, setSelectedDeleteRow] = React.useState<Delivery | null>(null)
   const [newRowData, setNewRowData] = React.useState({ code: "", location: "", delivery: "" })
   const [rowCount, setRowCount] = React.useState(data.length)
   const [tempRowData, setTempRowData] = React.useState<Delivery[]>([])
@@ -194,8 +195,13 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
   }
 
   const adjustRowCount = (direction: 'up' | 'down') => {
-    const newCount = direction === 'up' ? rowCount + 1 : Math.max(1, rowCount - 1)
-    setRowCount(newCount)
+    if (direction === 'up') {
+      setRowCount(rowCount + 1)
+    } else {
+      if (rowCount > 1) {
+        setRowCount(rowCount - 1)
+      }
+    }
   }
 
   const handleRowInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +213,7 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
 
   const openRowDialog = () => {
     setTempRowData([...tableData])
+    setRowCount(tableData.length)
     setOrderInputs({})
     setRowDialogOpen(true)
   }
@@ -238,7 +245,31 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
   }
 
   const applyRowOrder = () => {
-    setTableData(tempRowData)
+    let finalData = [...tempRowData]
+    
+    // Apply row count adjustment
+    if (rowCount !== finalData.length) {
+      if (rowCount > finalData.length) {
+        // Add new rows
+        const rowsToAdd = rowCount - finalData.length
+        for (let i = 0; i < rowsToAdd; i++) {
+          const newId = Math.max(...finalData.map(row => row.id), 0) + i + 1
+          finalData.push({
+            id: newId,
+            code: 0,
+            location: "",
+            delivery: "",
+            lat: 0,
+            lng: 0,
+          })
+        }
+      } else {
+        // Remove rows
+        finalData = finalData.slice(0, rowCount)
+      }
+    }
+    
+    setTableData(finalData)
     setRowDialogOpen(false)
   }
 
@@ -247,8 +278,8 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
     const newRow: Delivery = {
       id: newId,
       code: parseInt(newRowData.code) || 0,
-      location: newRowData.location,
-      delivery: newRowData.delivery,
+      location: newRowData.location || "",
+      delivery: newRowData.delivery || "",
       lat: 0,
       lng: 0,
     }
@@ -257,16 +288,21 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
     setAddRowDialogOpen(false)
   }
 
+  const handleDeleteRow = () => {
+    if (selectedDeleteRow) {
+      setTableData(tableData.filter(row => row.id !== selectedDeleteRow.id))
+      setDeleteDialogOpen(false)
+      setSelectedDeleteRow(null)
+    }
+  }
+
   const columns: ColumnDef<Delivery>[] = [
     {
       id: "rowNumber",
       header: () => <div className="text-center font-bold">No</div>,
-      cell: ({ table, ...context }) => {
-        const pageIndex = table.getState().pagination.pageIndex
-        const pageSize = table.getState().pagination.pageSize
-        const visualRowIndex = (context as any).rowIndex ?? 0
-        const sequentialNo = pageIndex * pageSize + visualRowIndex + 1
-        return <div className="text-center font-bold text-primary">{sequentialNo}</div>
+      cell: ({ row }) => {
+        const rowIndex = row.index + 1
+        return <div className="text-center font-bold text-primary">{rowIndex}</div>
       },
       enableSorting: false,
       size: 60,
@@ -330,7 +366,7 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
     {
       id: "actions",
       enableHiding: false,
-      header: () => <div className="text-center">Actions</div>,
+      header: () => <div className="text-center text-destructive font-semibold">Actions</div>,
       cell: ({ row, table }) => {
         const delivery = row.original
         const onEditRow = (table.options.meta as any)?.onEditRow
@@ -346,6 +382,18 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
                 title="Edit Row"
               >
                 <Edit className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+            {isEditMode && (
+              <button
+                onClick={() => {
+                  setSelectedDeleteRow(delivery)
+                  setDeleteDialogOpen(true)
+                }}
+                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all duration-200 group"
+                title="Delete Row"
+              >
+                <Trash2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
               </button>
             )}
             <button
@@ -396,7 +444,6 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -417,77 +464,68 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-6">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-card shadow-md hover:shadow-lg transition-all duration-200">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-sm">
-              <svg className="h-5 w-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                Data Management
-                <span className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full">Active</span>
-              </h2>
-              <p className="text-xs text-muted-foreground font-medium">Configure your table settings</p>
-            </div>
+      <div className="rounded-lg border shadow-sm bg-card transition-all duration-200 hover:shadow-md overflow-hidden">
+        {/* Table Toolbar */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+          <div>
+            <h2 className="text-base font-bold text-foreground">Data Management</h2>
+            <p className="text-sm text-muted-foreground font-medium">Configure your table settings</p>
           </div>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shadow-sm hover:shadow-md transition-all duration-200">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => setColumnDialogOpen(true)}
-              className="cursor-pointer"
-            >
-              Column Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openRowDialog()}
-              className="cursor-pointer"
-            >
-              Row Settings
-            </DropdownMenuItem>
-            {isEditMode && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="shadow-sm hover:shadow-lg hover:scale-110 hover:rotate-90 transition-all duration-300 backdrop-blur-sm"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="backdrop-blur-md bg-background/95 border-primary/20">
               <DropdownMenuItem
-                onClick={() => setAddRowDialogOpen(true)}
+                onClick={() => setColumnDialogOpen(true)}
                 className="cursor-pointer"
               >
-                Add New Row
+                Column Settings
               </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-lg border shadow-sm bg-card overflow-hidden transition-all duration-200 hover:shadow-md">
-        <div className="overflow-auto max-h-[600px]">
-        <Table>
-          <TableHeader className="sticky top-0 bg-muted/50 z-10">
+              <DropdownMenuItem
+                onClick={() => openRowDialog()}
+                className="cursor-pointer"
+              >
+                Row Settings
+              </DropdownMenuItem>
+              {isEditMode && (
+                <DropdownMenuItem
+                  onClick={() => setAddRowDialogOpen(true)}
+                  className="cursor-pointer"
+                >
+                  Add New Row
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="overflow-auto max-h-[calc(100vh-300px)] border-2 border-primary/10 shadow-lg bg-gradient-to-br from-background to-muted/20">
+        <table className="w-full caption-bottom text-sm relative">
+          <thead className="">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-muted/50 border-b-2 border-primary/10">
+              <tr key={headerGroup.id} className="bg-gradient-to-r from-primary/10 to-primary/5 border-b-2 border-primary/20 sticky top-0 z-10">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-center font-semibold text-foreground bg-muted/50">
+                    <th key={header.id} className="h-12 px-4 text-center align-middle font-bold text-foreground text-sm">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableHead>
+                    </th>
                   )
                 })}
-              </TableRow>
+              </tr>
             ))}
-          </TableHeader>
-          <TableBody className="text-xs">
+          </thead>
+          <tbody className="text-xs">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, rowIndex) => {
                 const delivery = row.original
@@ -495,68 +533,44 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
                 const hasMode = delivery.powerMode && delivery.powerMode !== 'notset'
                 
                 return (
-                  <TableRow
+                  <tr
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-200 ${
                       hasMode && !isActive 
-                        ? 'opacity-40 bg-muted/20 hover:bg-muted/30' 
-                        : 'hover:bg-muted/30'
+                        ? 'opacity-40 bg-muted/20 hover:bg-primary/5 hover:shadow-sm' 
+                        : 'hover:bg-primary/5 hover:shadow-sm'
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-center">
+                      <td key={cell.id} className="p-3 align-middle text-center font-semibold">
                         {flexRender(
                           cell.column.columnDef.cell,
                           { ...cell.getContext(), rowIndex }
                         )}
-                      </TableCell>
+                      </td>
                     ))}
-                  </TableRow>
+                  </tr>
                 )
               })
             ) : (
-              <TableRow>
-                <TableCell
+              <tr>
+                <td
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center p-4 align-middle"
                 >
                   No results.
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
-      <div className="flex items-center justify-between py-6 px-2">
-        <div className="flex items-center gap-2">
+        {/* Table Footer */}
+        <div className="flex items-center justify-center px-4 py-3 border-t bg-muted/20">
           <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
-            {table.getFilteredRowModel().rows.length} Records
+            {rowCount} of {tableData.length} Records
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="shadow-sm hover:shadow-md transition-all duration-200"
-          >
-            Previous
-          </Button>
-          <div className="px-3 py-1 text-sm text-muted-foreground font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="shadow-sm hover:shadow-md transition-all duration-200"
-          >
-            Next
-          </Button>
-        </div>
         </div>
       </div>
 
@@ -661,7 +675,6 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
             </Button>
             <Button 
               onClick={handleAddNewRow}
-              disabled={!newRowData.code || !newRowData.location || !newRowData.delivery}
             >
               Add Row
             </Button>
@@ -671,49 +684,54 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
 
       {/* Row Settings Dialog */}
       <Dialog open={rowDialogOpen} onOpenChange={setRowDialogOpen}>
-        <DialogContent className="max-w-7xl max-h-[70vh]" onOpenAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>Row Settings</DialogTitle>
-            <DialogDescription>
-              Adjust the number of rows and reorder them.
+        <DialogContent className="max-w-[90vw] max-h-[80vh]" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader className="space-y-2 pb-4 border-b">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Row Settings
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Manage your table rows with ease - reorder and adjust row count
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-6">
             {/* Row Reorder Preview */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold">Reorder Rows</Label>
-              <p className="text-xs text-muted-foreground">
-                Enter order number (1-{tempRowData.length}) to reorder rows. Changes will apply after clicking Apply button.
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-1 bg-gradient-to-b from-primary to-primary/40 rounded-full"></div>
+                <Label className="text-lg font-bold">Reorder Rows</Label>
+              </div>
+              <p className="text-sm text-muted-foreground pl-4">
+                💡 Enter order number (1-{tempRowData.length}) to reorder rows. Changes will apply after clicking Apply button.
               </p>
-              <div className="rounded-md border">
-                <div className="max-h-[300px] overflow-y-auto overflow-x-auto">
+              <div className="rounded-xl border-2 border-primary/10 overflow-hidden shadow-lg bg-gradient-to-br from-background to-muted/20">
+                <div className="max-h-[300px] overflow-auto">
                   <table className="w-full caption-bottom text-sm">
-                    <thead className="[&_tr]:border-b sticky top-0 z-50 bg-muted shadow-sm">
-                      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted bg-muted">
-                        <th className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] w-[120px] text-xs bg-muted">Order</th>
-                        <th className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] w-[150px] text-xs bg-muted">Code</th>
-                        <th className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] w-[300px] text-xs bg-muted">Location</th>
-                        <th className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] w-[250px] text-xs bg-muted">Delivery</th>
+                    <thead>
+                      <tr className="bg-gradient-to-r from-primary/10 to-primary/5 border-b-2 border-primary/20 sticky top-0 z-10">
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[120px] text-sm">Order</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[150px] text-sm">Code</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[300px] text-sm">Location</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[250px] text-sm">Delivery</th>
                       </tr>
                     </thead>
-                    <tbody className="[&_tr:last-child]:border-0">
+                    <tbody>
                     {tempRowData.map((row, index) => (
-                      <tr key={row.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                        <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center w-[120px]">
+                      <tr key={row.id} className="transition-all duration-200 hover:bg-primary/5 hover:shadow-sm">
+                        <td className="p-3 align-middle text-center w-[120px]">
                           <Input
                             type="number"
                             value={orderInputs[index] || ''}
                             onChange={(e) => handleOrderChange(index, e.target.value)}
                             onBlur={() => handleOrderBlur(index)}
                             placeholder={(index + 1).toString()}
-                            className="w-[70px] text-center text-xs h-8"
+                            className="w-[80px] text-center text-sm h-9 font-semibold border-2 focus:border-primary focus:ring-2 focus:ring-primary/20"
                             min={1}
                             max={tempRowData.length}
                           />
                         </td>
-                        <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center text-xs w-[150px]">{row.code}</td>
-                        <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center text-xs w-[300px]">{row.location}</td>
-                        <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center text-xs w-[250px]">{row.delivery}</td>
+                        <td className="p-3 align-middle text-center text-sm font-semibold w-[150px]">{row.code}</td>
+                        <td className="p-3 align-middle text-center text-sm font-medium w-[300px]">{row.location}</td>
+                        <td className="p-3 align-middle text-center text-sm w-[250px]">{row.delivery}</td>
                       </tr>
                     ))}
                     </tbody>
@@ -722,17 +740,29 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
               </div>
             </div>
 
-            <div className="border-t" />
+            <div className="border-t-2 border-dashed border-primary/20" />
 
             {/* Row Count Control */}
             <div className="space-y-3">
-              <Label className="text-sm font-semibold">Number of Rows</Label>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 bg-gradient-to-b from-primary to-primary/40 rounded-full"></div>
+                <Label className="text-sm font-semibold">Entire Rows</Label>
+              </div>
+              {rowCount > tempRowData.length && (
+                <div className="flex items-center gap-2 p-2 bg-destructive/10 border border-destructive/30 rounded-md">
+                  <span className="text-sm">⚠️</span>
+                  <p className="text-xs text-destructive font-medium">
+                    This route has only {tempRowData.length} row{tempRowData.length !== 1 ? 's' : ''}. Please add new row at main table settings.
+                  </p>
+                </div>
+              )}
+              <div className="flex items-center justify-center gap-4 p-4 bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border border-primary/10">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => adjustRowCount('down')}
                   disabled={rowCount <= 1}
+                  className="h-8 w-8 rounded-full hover:scale-110 transition-transform disabled:opacity-30"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -740,7 +770,7 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
                   type="number"
                   value={rowCount}
                   onChange={handleRowInputChange}
-                  className="w-32 text-center"
+                  className={`w-28 text-center text-base font-bold h-9 rounded-lg border ${rowCount > tempRowData.length ? 'border-destructive text-destructive bg-destructive/5' : 'border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                   min={1}
                   max={1000}
                 />
@@ -748,18 +778,19 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
                   variant="outline"
                   size="icon"
                   onClick={() => adjustRowCount('up')}
+                  className="h-8 w-8 rounded-full hover:scale-110 transition-transform"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRowDialogOpen(false)}>
+          <DialogFooter className="gap-3 pt-4 border-t">
+            <Button variant="outline" onClick={() => setRowDialogOpen(false)} className="px-6 h-11 text-base font-semibold">
               Cancel
             </Button>
-            <Button onClick={applyRowOrder}>
-              Apply
+            <Button onClick={applyRowOrder} disabled={rowCount > tempRowData.length} className="px-8 h-11 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg transition-all">
+              Apply Changes
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -823,6 +854,39 @@ export function DataTable({ data, onLocationClick, onEditRow, showMap = true }: 
           }
         }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Row</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this row? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedDeleteRow && (
+            <div className="py-4 space-y-2">
+              <div className="text-sm">
+                <span className="font-semibold">Code:</span> {selectedDeleteRow.code}
+              </div>
+              <div className="text-sm">
+                <span className="font-semibold">Location:</span> {selectedDeleteRow.location}
+              </div>
+              <div className="text-sm">
+                <span className="font-semibold">Delivery:</span> {selectedDeleteRow.delivery}
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteRow}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -539,3 +539,30 @@ html, body {
 button, a, input, select, textarea {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Force sticky header positioning for tables */
+.data-table-container {
+  position: relative;
+  overflow: auto;
+}
+
+.data-table-container thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.data-table-container thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.data-table-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: hsl(var(--muted) / 0.5);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid hsl(var(--primary) / 0.1);
+}
