@@ -96,6 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [securityOpen, setSecurityOpen] = React.useState(false)
   const [helpOpen, setHelpOpen] = React.useState(false)
   const [saveConfirmOpen, setSaveConfirmOpen] = React.useState(false)
+  const [editModeOffConfirm, setEditModeOffConfirm] = React.useState(false)
   
   // Notification settings
   const [emailNotifs, setEmailNotifs] = React.useState(true)
@@ -128,6 +129,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [])
 
   const handleEditModeChange = async (mode: boolean) => {
+    // If turning OFF edit mode and has unsaved changes, show confirmation
+    if (!mode && hasUnsavedChanges) {
+      setEditModeOffConfirm(true)
+      return
+    }
+    
     setIsLoading(true)
     
     // Simulate page reload effect
@@ -138,6 +145,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // Keep loading state for a moment to show the transition
     await new Promise(resolve => setTimeout(resolve, 400))
     setIsLoading(false)
+  }
+
+  const handleConfirmEditModeOff = async () => {
+    setEditModeOffConfirm(false)
+    setIsLoading(true)
+    
+    // Clear all pending changes
+    window.location.reload() // Reload to discard all changes
   }
 
   const handleSaveChanges = async () => {
@@ -614,6 +629,41 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="bg-green-600 hover:bg-green-700"
             >
               {isLoading ? "Saving..." : "Save All Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Mode OFF Confirmation Dialog */}
+      <Dialog open={editModeOffConfirm} onOpenChange={setEditModeOffConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-amber-600">Unsaved Changes Detected</DialogTitle>
+            <DialogDescription>
+              You have unsaved changes. Turning off edit mode will discard all pending changes. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                <strong>Warning:</strong> All unsaved edits, additions, and deletions will be permanently lost.
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setEditModeOffConfirm(false)}
+              disabled={isLoading}
+            >
+              Keep Edit Mode ON
+            </Button>
+            <Button 
+              onClick={handleConfirmEditModeOff}
+              disabled={isLoading}
+              variant="destructive"
+            >
+              {isLoading ? "Discarding..." : "Discard Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
