@@ -84,16 +84,7 @@ export default function KL7Page() {
       locationName.toLowerCase().includes(del.location.toLowerCase())
     )
     if (delivery) {
-      const location = {
-        id: delivery.id,
-        name: delivery.location,
-        code: delivery.code,
-        lat: delivery.lat,
-        lng: delivery.lng,
-        delivery: delivery.delivery,
-        color: delivery.color
-      }
-      setSelectedLocation(location)
+      setSelectedLocation(delivery)
     }
   }
 
