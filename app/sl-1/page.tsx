@@ -234,11 +234,14 @@ export default function SL1Page() {
           <ModeToggle />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="min-h-[100vh] flex-1 rounded-xl border bg-muted/50 p-8 shadow-sm">
+          <div className="min-h-[100vh] flex-1 rounded-xl border-2 border-primary/10 bg-gradient-to-br from-background via-muted/30 to-primary/5 p-8 shadow-lg">
             {/* Map Section */}
             <div className="mb-6">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold">Map View</h2>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                  <div className="h-2 w-2 bg-primary rounded-full animate-pulse" />
+                  <h2 className="text-sm font-semibold text-primary">Map View</h2>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
@@ -281,7 +284,6 @@ export default function SL1Page() {
 
             {/* Data Table Section */}
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Data Management</h2>
               <DataTable 
                 data={deliveryData} 
                 onLocationClick={handleLocationClick} 

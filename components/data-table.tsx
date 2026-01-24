@@ -347,7 +347,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               <div 
                 className={`text-center p-2 rounded-md transition-all duration-200 ${
                   showMap 
-                    ? 'cursor-pointer hover:bg-primary/10 hover:text-primary hover:font-medium hover:shadow-sm' 
+                    ? 'cursor-pointer hover:bg-primary/10 hover:text-primary hover:font-medium' 
                     : ''
                 }`}
                 onClick={() => {
@@ -427,7 +427,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                 }
               }}
               className={`p-2 rounded-lg transition-all duration-200 group ${
-                isEditMode ? 'hover:shadow-md cursor-pointer' : 'cursor-default'
+                isEditMode ? 'cursor-pointer' : 'cursor-default'
               }`}
               title={powerColor.title}
               style={{
@@ -490,7 +490,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="shadow-sm hover:shadow-lg hover:scale-110 hover:rotate-90 transition-all duration-300 backdrop-blur-sm"
+                className="hover:scale-110 hover:rotate-90 transition-all duration-300 backdrop-blur-sm"
               >
                 <Settings className="h-4 w-4" />
               </Button>
@@ -509,24 +509,32 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                 Row Settings
               </DropdownMenuItem>
               {isEditMode && (
-                <DropdownMenuItem
-                  onClick={() => setAddRowDialogOpen(true)}
-                  className="cursor-pointer"
-                >
-                  Add New Row
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem
+                    onClick={() => setAddRowDialogOpen(true)}
+                    className="cursor-pointer"
+                  >
+                    Add New Row
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => openRowDialog()}
+                    className="cursor-pointer"
+                  >
+                    Move Row
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="overflow-auto max-h-[calc(100vh-300px)] border-2 border-primary/10 shadow-lg bg-gradient-to-br from-background to-muted/20">
+        <div className="overflow-auto max-h-[400px] bg-muted/30">
         <table className="w-full caption-bottom text-sm relative">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b-2 border-primary/20 sticky top-0 z-[30]">
+              <tr key={headerGroup.id} className="border-b sticky top-0 z-[30]">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} className="h-12 px-4 text-center align-middle font-bold text-foreground bg-background" style={{ fontSize: '13px', boxShadow: 'inset 0 0 0 2px hsl(var(--primary) / 0.1)' }}>
+                    <th key={header.id} className="h-12 px-4 text-center align-middle font-bold text-foreground bg-background" style={{ fontSize: '13px' }}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -552,8 +560,8 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                     data-state={row.getIsSelected() && "selected"}
                     className={`transition-all duration-200 ${
                       hasMode && !isActive 
-                        ? 'opacity-40 bg-muted/20 hover:bg-primary/5 hover:shadow-sm' 
-                        : 'hover:bg-primary/5 hover:shadow-sm'
+                        ? 'opacity-40 bg-muted/20 hover:bg-primary/5' 
+                        : 'hover:bg-primary/5'
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -581,7 +589,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
         </table>
       </div>
         {/* Table Footer */}
-        <div className="flex items-center justify-center px-4 py-3 border-t bg-muted/20">
+        <div className="flex items-center justify-center px-4 py-3 border-t bg-muted/30">
           <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
             {rowCount} of {tableData.length} Records
           </div>
@@ -708,8 +716,8 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
 
       {/* Row Settings Dialog */}
       <Dialog open={rowDialogOpen} onOpenChange={setRowDialogOpen}>
-        <DialogContent className="max-w-[90vw] max-h-[80vh] backdrop-blur-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader className="space-y-2 pb-4 border-b">
+        <DialogContent className="max-w-[75vw] backdrop-blur-sm flex flex-col max-h-[80vh]" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader className="space-y-2 pb-4 border-b flex-shrink-0">
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Row Settings
             </DialogTitle>
@@ -717,7 +725,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               Manage your table rows with ease - reorder and adjust row count
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-6">
+          <div className="flex-1 overflow-auto py-6 space-y-6">
             {/* Row Reorder Preview */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -727,20 +735,20 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               <p className="text-sm text-muted-foreground pl-4">
                 💡 Enter order number (1-{tempRowData.length}) to reorder rows. Changes will apply after clicking Apply button.
               </p>
-              <div className="rounded-xl border-2 border-primary/10 overflow-hidden shadow-lg bg-gradient-to-br from-background to-muted/20">
-                <div className="max-h-[300px] overflow-auto">
+              <div className="rounded-xl border-2 border-primary/10 overflow-hidden bg-gradient-to-br from-background to-muted/20">
+                <div className="overflow-auto" style={{ height: '300px' }}>
                   <table className="w-full caption-bottom text-sm">
                     <thead>
                       <tr className="border-b-2 border-primary/20 sticky top-0 z-[30]">
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[120px] bg-background" style={{ fontSize: '13px', boxShadow: 'inset 0 0 0 2px hsl(var(--primary) / 0.1)' }}>Order</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[150px] bg-background" style={{ fontSize: '13px', boxShadow: 'inset 0 0 0 2px hsl(var(--primary) / 0.1)' }}>Code</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[300px] bg-background" style={{ fontSize: '13px', boxShadow: 'inset 0 0 0 2px hsl(var(--primary) / 0.1)' }}>Location</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[250px] bg-background" style={{ fontSize: '13px', boxShadow: 'inset 0 0 0 2px hsl(var(--primary) / 0.1)' }}>Delivery</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[120px] bg-background" style={{ fontSize: '13px' }}>Order</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[150px] bg-background" style={{ fontSize: '13px' }}>Code</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[300px] bg-background" style={{ fontSize: '13px' }}>Location</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[250px] bg-background" style={{ fontSize: '13px' }}>Delivery</th>
                       </tr>
                     </thead>
                     <tbody>
                     {tempRowData.map((row, index) => (
-                      <tr key={row.id} className="transition-all duration-200 hover:bg-primary/5 hover:shadow-sm">
+                      <tr key={row.id} className="transition-all duration-200 hover:bg-primary/5">
                         <td className="p-3 align-middle text-center w-[120px]">
                           <Input
                             type="number"
@@ -809,11 +817,11 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-3 pt-4 border-t">
+          <DialogFooter className="gap-3 pt-4 border-t flex-shrink-0">
             <Button variant="outline" onClick={() => setRowDialogOpen(false)} className="px-6 h-11 text-base font-semibold">
               Cancel
             </Button>
-            <Button onClick={applyRowOrder} disabled={rowCount > tempRowData.length} className="px-8 h-11 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:shadow-lg transition-all">
+            <Button onClick={applyRowOrder} disabled={rowCount > tempRowData.length} className="px-8 h-11 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 transition-all">
               Apply Changes
             </Button>
           </DialogFooter>

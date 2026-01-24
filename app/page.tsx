@@ -56,7 +56,7 @@ export default function Home() {
           <ModeToggle />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div className="min-h-[100vh] flex-1 rounded-xl border bg-muted/50 p-8 shadow-sm">
+          <div className="min-h-[100vh] flex-1 rounded-xl border-2 border-primary/10 bg-gradient-to-br from-background via-muted/30 to-primary/5 p-8 shadow-lg">
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-1 bg-gradient-to-b from-primary to-primary/50 rounded-full" />
@@ -76,8 +76,8 @@ export default function Home() {
               </p>
               
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
-                <div className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all duration-200 group">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-6 shadow-md hover:shadow-xl hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 group">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                     <svg className="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
@@ -88,8 +88,8 @@ export default function Home() {
                   </p>
                 </div>
                 
-                <div className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all duration-200 group">
-                  <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="rounded-xl border-2 border-blue-500/20 bg-gradient-to-br from-card to-blue-500/5 p-6 shadow-md hover:shadow-xl hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-300 group">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                     <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -100,8 +100,8 @@ export default function Home() {
                   </p>
                 </div>
                 
-                <div className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all duration-200 group">
-                  <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="rounded-xl border-2 border-green-500/20 bg-gradient-to-br from-card to-green-500/5 p-6 shadow-md hover:shadow-xl hover:border-green-500/40 hover:-translate-y-1 transition-all duration-300 group">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                     <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
@@ -113,16 +113,16 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-8 rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+              <div className="mt-8 rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 shadow-lg">
                 <h3 className="font-semibold text-lg mb-3">Quick Actions</h3>
                 <div className="flex flex-wrap gap-2">
-                  <a href="/kl-7" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md font-medium">
+                  <a href="/kl-7" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
                     View KL Routes
                   </a>
-                  <a href="/sl-1" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md font-medium">
+                  <a href="/sl-1" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
                     View SL Routes
                   </a>
-                  <button className="px-4 py-2 rounded-lg border bg-background hover:bg-muted transition-all duration-200 font-medium">
+                  <button className="px-4 py-2 rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/10 hover:border-primary/40 hover:scale-105 transition-all duration-300 font-medium">
                     Settings
                   </button>
                 </div>
