@@ -274,6 +274,8 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
       delivery: newRowData.delivery || "",
       lat: 0,
       lng: 0,
+      color: "#3b82f6", // Default blue color
+      powerMode: 'notset',
     }
     if (onAddRow) {
       onAddRow(newRow)
