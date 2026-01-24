@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import L from "leaflet"
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+import { Delivery } from "@/app/data"
 
 // Fix for default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -15,21 +16,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 })
 
-type Location = {
-  id: number
-  name: string
-  code: number
-  lat: number
-  lng: number
-  delivery: string
-}
-
 interface MapComponentProps {
-  locations: Location[]
-  selectedLocation: Location | null
+  locations: Delivery[]
+  selectedLocation: Delivery | null
 }
 
-function FlyToLocation({ location }: { location: Location | null }) {
+function FlyToLocation({ location }: { location: Delivery | null }) {
   const map = useMap()
 
   useEffect(() => {
@@ -111,7 +103,7 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
             className="custom-popup"
           >
             <div className="map-popup">
-              <h3 className="popup-title">{location.name}</h3>
+              <h3 className="popup-title">{location.location}</h3>
               <div className="popup-details">
                 <p className="popup-item">
                   <strong>Code:</strong> {location.code}

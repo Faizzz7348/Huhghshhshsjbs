@@ -49,7 +49,7 @@ const MapComponent = dynamic(
 export default function SL1Page() {
   const { showPageLoading } = usePageLoading()
   const [mounted, setMounted] = useState(false)
-  const [selectedLocation, setSelectedLocation] = useState<typeof locations[0] | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<Delivery | null>(null)
   const [showMap, setShowMap] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<Delivery | null>(null)
@@ -84,16 +84,7 @@ export default function SL1Page() {
       locationName.toLowerCase().includes(del.location.toLowerCase())
     )
     if (delivery) {
-      const location = {
-        id: delivery.id,
-        name: delivery.location,
-        code: delivery.code,
-        lat: delivery.lat,
-        lng: delivery.lng,
-        delivery: delivery.delivery,
-        color: delivery.color
-      }
-      setSelectedLocation(location)
+      setSelectedLocation(delivery)
     }
   }
 
