@@ -140,7 +140,7 @@ export function PowerModeModal({ visible, onHide, rowData, onSave }: PowerModeMo
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
-                      setTempSelectedMode(mode.value as string | null)
+                      setTempSelectedMode(mode.value as "daily" | "alt1" | "alt2" | "weekday" | "weekend" | "notset" | null)
                     }}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-inner ${
                       isSelected ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
