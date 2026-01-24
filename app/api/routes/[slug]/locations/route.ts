@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma'
 // GET all locations for a specific route
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = await params
+    const { slug } = params
     const route = await prisma.route.findUnique({
       where: { slug },
       include: {
