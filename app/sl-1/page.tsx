@@ -18,7 +18,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { locations, Location } from "./locations"
 import { Eye, EyeOff } from "lucide-react"
 import dynamic from "next/dynamic"
 import { DataTable } from "@/components/data-table"
@@ -56,7 +55,6 @@ export default function SL1Page() {
   const [editingRow, setEditingRow] = useState<Delivery | null>(null)
   const [codeError, setCodeError] = useState<string>('')
   const [deliveryData, setDeliveryData] = useState<Delivery[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     showPageLoading("Opening Route SL-1", 800)
@@ -74,8 +72,6 @@ export default function SL1Page() {
         }
       } catch (error) {
         console.error('Error fetching locations:', error)
-      } finally {
-        setLoading(false)
       }
     }
     fetchData()

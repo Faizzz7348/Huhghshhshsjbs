@@ -11,7 +11,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit, Trash2 } from "lucide-react"
@@ -20,18 +19,9 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -474,7 +464,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, showM
 
   return (
     <div className="w-full">
-      <div className="rounded-lg border shadow-sm bg-card transition-all duration-200 hover:shadow-md overflow-hidden">
+      <div className="rounded-lg border bg-card overflow-hidden">
         {/* Table Toolbar */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
           <div>
@@ -522,7 +512,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, showM
               <tr key={headerGroup.id} className="bg-gradient-to-r from-primary/10 to-primary/5 border-b-2 border-primary/20 sticky top-0 z-10">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} className="h-12 px-4 text-center align-middle font-bold text-foreground text-sm">
+                    <th key={header.id} className="h-12 px-4 text-center align-middle font-bold text-foreground" style={{ fontSize: '13px' }}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -718,10 +708,10 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, showM
                   <table className="w-full caption-bottom text-sm">
                     <thead>
                       <tr className="bg-gradient-to-r from-primary/10 to-primary/5 border-b-2 border-primary/20 sticky top-0 z-10">
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[120px] text-sm">Order</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[150px] text-sm">Code</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[300px] text-sm">Location</th>
-                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[250px] text-sm">Delivery</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[120px]" style={{ fontSize: '13px' }}>Order</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[150px]" style={{ fontSize: '13px' }}>Code</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[300px]" style={{ fontSize: '13px' }}>Location</th>
+                        <th className="h-12 px-4 text-center align-middle font-bold text-foreground w-[250px]" style={{ fontSize: '13px' }}>Delivery</th>
                       </tr>
                     </thead>
                     <tbody>

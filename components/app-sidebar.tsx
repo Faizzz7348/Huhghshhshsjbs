@@ -159,7 +159,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent className="flex-1 overflow-y-auto min-h-0">
           <SidebarGroup>
             <SidebarMenu>
-              {data.navMain.map((item, index) => (
+              {data.navMain.map((item) => (
                 item.items?.length ? (
                   <Collapsible
                     key={item.title}
@@ -168,7 +168,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   >
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton>
+                        <SidebarMenuButton className="font-bold">
                           {item.title}{" "}
                           <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                           <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
@@ -179,7 +179,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <a href={subItem.url}>{subItem.title}</a>
+                                <a href={subItem.url} className="font-bold">{subItem.title}</a>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -190,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ) : (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>{item.title}</a>
+                      <a href={item.url} className="font-bold">{item.title}</a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -206,10 +206,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton size="lg" className="cursor-pointer">
                     <Settings className="h-5 w-5" />
-                    <div className="flex flex-col gap-0.5 leading-none flex-1">
-                      <span className="font-semibold">Settings</span>
-                      <span className="text-xs text-muted-foreground">Configure options</span>
-                    </div>
+                    <span className="font-bold">Settings</span>
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="top" align="end" className="w-[240px] z-[100]">
@@ -239,12 +236,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </div>
                   </div>
                   <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
+                    <DropdownMenuSubTrigger className="cursor-pointer">
                       <Palette className="mr-2 h-4 w-4" />
-                      <div className="flex flex-col">
-                        <span className="font-medium">Appearance</span>
-                        <span className="text-xs text-muted-foreground">Theme & display</span>
-                      </div>
+                      <span className="font-medium">Appearance</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="w-[200px]">
                       <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Mode</div>
@@ -264,67 +258,69 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         {theme === "system" && <Check className="ml-auto h-4 w-4" />}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Color Theme</div>
-                      <DropdownMenuItem onClick={() => setColorTheme("default")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
-                        <span>Default</span>
-                        {colorTheme === "default" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("zinc")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-zinc-700" />
-                        <span>Zinc</span>
-                        {colorTheme === "zinc" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("slate")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-slate-700" />
-                        <span>Slate</span>
-                        {colorTheme === "slate" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("stone")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-stone-700" />
-                        <span>Stone</span>
-                        {colorTheme === "stone" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("gray")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-gray-700" />
-                        <span>Gray</span>
-                        {colorTheme === "gray" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("blue")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-blue-600" />
-                        <span>Blue</span>
-                        {colorTheme === "blue" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("green")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-green-600" />
-                        <span>Green</span>
-                        {colorTheme === "green" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("orange")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-orange-600" />
-                        <span>Orange</span>
-                        {colorTheme === "orange" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("rose")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-rose-600" />
-                        <span>Rose</span>
-                        {colorTheme === "rose" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("red")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-red-600" />
-                        <span>Red</span>
-                        {colorTheme === "red" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("yellow")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-yellow-600" />
-                        <span>Yellow</span>
-                        {colorTheme === "yellow" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setColorTheme("violet")} className="gap-2">
-                        <div className="h-4 w-4 rounded-full bg-violet-600" />
-                        <span>Violet</span>
-                        {colorTheme === "violet" && <Check className="ml-auto h-4 w-4" />}
-                      </DropdownMenuItem>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground sticky top-0 bg-popover z-10">Color Theme</div>
+                      <div className="max-h-[250px] overflow-y-auto">
+                        <DropdownMenuItem onClick={() => setColorTheme("default")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
+                          <span>Default</span>
+                          {colorTheme === "default" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("zinc")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-zinc-700" />
+                          <span>Zinc</span>
+                          {colorTheme === "zinc" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("slate")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-slate-700" />
+                          <span>Slate</span>
+                          {colorTheme === "slate" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("stone")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-stone-700" />
+                          <span>Stone</span>
+                          {colorTheme === "stone" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("gray")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-gray-700" />
+                          <span>Gray</span>
+                          {colorTheme === "gray" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("blue")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-blue-600" />
+                          <span>Blue</span>
+                          {colorTheme === "blue" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("green")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-green-600" />
+                          <span>Green</span>
+                          {colorTheme === "green" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("orange")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-orange-600" />
+                          <span>Orange</span>
+                          {colorTheme === "orange" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("rose")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-rose-600" />
+                          <span>Rose</span>
+                          {colorTheme === "rose" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("red")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-red-600" />
+                          <span>Red</span>
+                          {colorTheme === "red" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("yellow")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-yellow-600" />
+                          <span>Yellow</span>
+                          {colorTheme === "yellow" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setColorTheme("violet")} className="gap-2">
+                          <div className="h-4 w-4 rounded-full bg-violet-600" />
+                          <span>Violet</span>
+                          {colorTheme === "violet" && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                      </div>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
                   <DropdownMenuItem onClick={() => setNotificationsOpen(true)} className="cursor-pointer">
