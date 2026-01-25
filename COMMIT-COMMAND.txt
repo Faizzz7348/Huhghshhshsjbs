@@ -1,0 +1,45 @@
+🚀 Git Commit Command - Copy dan Paste ke Terminal
+
+Jalankan command ini di terminal untuk commit semua perubahan:
+
+git add -A && git commit -m "feat: Configure separate data for each submenu route
+
+- Updated seed script with distinct hospital data for KL-7 and SL-1 routes
+  - KL-7 (Data A): 5 hospitals in Kuala Lumpur area (codes 101-105)
+  - SL-1 (Data B): 5 hospitals in Selayang/Setapak area (codes 201-205)
+
+- Added comprehensive documentation:
+  - SETUP-DATA-MELAYU.md: Quick start guide in Malay
+  - RINGKASAN-PERUBAHAN.md: Detailed summary of changes
+  - VISUAL-GUIDE.md: Visual workflow from database to frontend
+  - DATA-SETUP.md: Technical documentation
+  - README-SETUP.md: Quick reference guide
+  - setup-data.sh: Automated setup script
+
+Each submenu now displays completely separate data via:
+- Database: Foreign key routeId separates location data
+- API: Dynamic routing by slug (/api/routes/[slug]/locations)
+- Frontend: Each page fetches from its own endpoint"
+
+================================================================================
+
+Atau jika mahu commit message yang lebih ringkas:
+
+git add -A && git commit -m "feat: Add separate data for KL-7 and SL-1 routes with documentation"
+
+================================================================================
+
+Lepas commit, push ke GitHub:
+
+git push origin main
+
+================================================================================
+
+Files yang akan di-commit:
+- prisma/seed.ts (MODIFIED)
+- DATA-SETUP.md (NEW)
+- README-SETUP.md (NEW)
+- RINGKASAN-PERUBAHAN.md (NEW)
+- SETUP-DATA-MELAYU.md (NEW)
+- VISUAL-GUIDE.md (NEW)
+- setup-data.sh (NEW)
