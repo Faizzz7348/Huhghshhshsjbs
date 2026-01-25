@@ -78,12 +78,13 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(route, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating route:', error)
     
     // Handle unique constraint violation (backup check)
-    if (error.code === 'P2002') {
-      const field = error.meta?.target?.[0] || 'field'
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      const meta = 'meta' in error && error.meta && typeof error.meta === 'object' && 'target' in error.meta ? error.meta.target : null
+      const field = Array.isArray(meta) && meta.length > 0 ? meta[0] : 'field'
       return NextResponse.json(
         { error: `A route with this ${field} already exists` },
         { status: 409 }

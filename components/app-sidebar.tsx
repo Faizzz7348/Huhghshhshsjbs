@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { GalleryVerticalEnd, Plus, Settings, Palette, Bell, User, Shield, HelpCircle, Moon, Sun, Check, Mail, MessageSquare, Calendar, Info, Lock, Key, Eye, Book, FileText, ExternalLink, Save, ChevronRight, Home, MapPin, Navigation } from "lucide-react"
+import { GalleryVerticalEnd, Plus, Settings, Palette, Bell, User, Shield, HelpCircle, Moon, Sun, Check, Mail, MessageSquare, Calendar, Info, Lock, Key, Eye, Book, FileText, ExternalLink, Save, ChevronRight, Home, MapPin } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { SearchForm } from "@/components/search-form"
