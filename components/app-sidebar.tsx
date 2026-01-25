@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { GalleryVerticalEnd, Minus, Plus, Settings, Palette, Bell, User, Shield, HelpCircle, Moon, Sun, Check, Mail, MessageSquare, Calendar, Info, Lock, Key, Eye, Book, FileText, ExternalLink, Save } from "lucide-react"
+import Link from "next/link"
+import { GalleryVerticalEnd, Minus, Plus, Settings, Palette, Bell, User, Shield, HelpCircle, Moon, Sun, Check, Mail, MessageSquare, Calendar, Info, Lock, Key, Eye, Book, FileText, ExternalLink, Save, ChevronRight, Home, MapPin, Navigation } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { SearchForm } from "@/components/search-form"
@@ -57,6 +58,7 @@ interface NavItem {
 interface NavMain {
   title: string
   url: string
+  icon?: React.ComponentType<{ className?: string }>
   items: NavItem[]
 }
 
@@ -75,11 +77,13 @@ const data = {
     {
       title: "Home",
       url: "/",
+      icon: Home,
       items: [],
     },
     {
       title: "Route Vm KL",
       url: "#",
+      icon: MapPin,
       items: [
         {
           title: "KL 7 - 3PVK04",
@@ -90,6 +94,7 @@ const data = {
     {
       title: "Route Vm SL",
       url: "#",
+      icon: Navigation,
       items: [
         {
           title: "SL 1 - 3AVS01",
@@ -105,6 +110,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { theme, setTheme } = useTheme()
   const [colorTheme, setColorTheme] = React.useState<string>("default")
   const [navData, setNavData] = React.useState<NavMain[]>(data.navMain)
+  const [openMenu, setOpenMenu] = React.useState<string | null>(null)
+  const [settingsOpen, setSettingsOpen] = React.useState(false)
   
   // Fetch routes from database
   React.useEffect(() => {
@@ -130,21 +137,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/${route.slug}`,
           }))
         
-        // Update nav data with fetched routes
-        setNavData([
+        // Update nav data with fetched routes - preserve icons from initial data
+        setNavData(prevData => [
           {
-            title: "Home",
-            url: "/",
+            ...prevData[0],
             items: [],
           },
           {
-            title: "Route Vm KL",
-            url: "#",
+            ...prevData[1],
             items: klRoutes,
           },
           {
-            title: "Route Vm SL",
-            url: "#",
+            ...prevData[2],
             items: slRoutes,
           },
         ])
@@ -315,27 +319,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent className="flex-1 overflow-y-auto min-h-0">
           <SidebarGroup>
             <SidebarMenu>
-              {navData.map((item) => (
-                item.items?.length ? (
+              {navData.map((item) => {
+                const Icon = item.icon
+                return item.items?.length ? (
                   <Collapsible
                     key={item.title}
-                    defaultOpen={false}
+                    open={openMenu === item.title}
+                    onOpenChange={(isOpen) => {
+                      setOpenMenu(isOpen ? item.title : null)
+                    }}
                     className="group/collapsible"
                   >
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="font-bold">
-                          {item.title}{" "}
-                          <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                          <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                          {Icon && <Icon className="h-4 w-4" />}
+                          <span className="flex-1">{item.title}</span>
+                          <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-300 ease-in-out group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
-                      <CollapsibleContent>
+                      <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
                         <SidebarMenuSub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <a href={subItem.url} className="font-bold">{subItem.title}</a>
+                                <Link href={subItem.url} className="font-bold">{subItem.title}</Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -344,7 +352,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton 
                                 onClick={() => openAddRouteDialog(item.title)}
-                                className="cursor-pointer text-green-600 dark:text-green-400 hover:bg-green-500/10"
+                                className="cursor-pointer text-green-600 dark:text-green-400 hover:bg-green-500/10 transition-all duration-200"
                               >
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add New Route
@@ -358,11 +366,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ) : (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url} className="font-bold">{item.title}</a>
+                      <Link href={item.url} className="font-bold">
+                        {Icon && <Icon className="h-4 w-4" />}
+                        {item.title}
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
-              ))}
+              })}
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
@@ -384,10 +395,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             )}
             
             <SidebarMenuItem>
-              <DropdownMenu>
+              <DropdownMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton size="lg" className="cursor-pointer">
-                    <Settings className="h-5 w-5" />
+                  <SidebarMenuButton 
+                    size="lg" 
+                    className="cursor-pointer bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 dark:from-blue-500/20 dark:to-purple-500/20 dark:hover:from-blue-500/30 dark:hover:to-purple-500/30 border border-blue-500/20 dark:border-blue-500/30"
+                  >
+                    <Settings className={`h-5 w-5 transition-transform duration-500 ease-in-out ${settingsOpen ? 'rotate-180' : 'rotate-0'}`} />
                     <span className="font-bold">Settings</span>
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>

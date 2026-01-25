@@ -48,9 +48,36 @@ export function EditModeProvider({ children }: { children: React.ReactNode }) {
 
   const saveAllChanges = React.useCallback(async () => {
     setIsLoading(true)
-    setSavingMessage('🔄 Initializing save process')
+    setSavingMessage('� Checking for duplicate codes...')
     
     try {
+      // Check for duplicates in pending changes
+      const createAndUpdateChanges = pendingChanges.filter(c => c.type === 'create' || c.type === 'update')
+      
+      for (const change of createAndUpdateChanges) {
+        if (change.data) {
+          const params = new URLSearchParams({
+            code: change.data.code.toString(),
+            ...(change.id ? { excludeId: change.id.toString() } : {})
+          })
+          
+          const response = await fetch(`/api/locations/check-duplicate?${params}`)
+          if (response.ok) {
+            const result = await response.json()
+            if (result.hasDuplicate) {
+              const duplicateInfo = result.duplicates.map((d: any) => 
+                `"${d.location}" in route ${d.routeName}`
+              ).join(', ')
+              setIsLoading(false)
+              setSavingMessage('')
+              alert(`❌ Cannot save: Code ${change.data.code} is duplicated in ${duplicateInfo}. Please resolve all duplicates before saving.`)
+              return
+            }
+          }
+        }
+      }
+      
+      setSavingMessage('🔄 Initializing save process')
       const totalChanges = pendingChanges.length
       let processedChanges = 0
       

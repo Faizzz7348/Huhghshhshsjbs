@@ -102,3 +102,56 @@ export async function PUT(
     )
   }
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+  const body = await request.json()
+  const { name, slug: newSlug, description } = body
+
+  try {
+    const route = await prisma.route.findUnique({
+      where: { slug },
+    })
+
+    if (!route) {
+      return NextResponse.json(
+        { error: 'Route not found' },
+        { status: 404 }
+      )
+    }
+
+    // If slug is changing, check if new slug already exists
+    if (newSlug && newSlug !== slug) {
+      const existingRoute = await prisma.route.findUnique({
+        where: { slug: newSlug },
+      })
+
+      if (existingRoute) {
+        return NextResponse.json(
+          { error: `Slug "${newSlug}" already exists. Please use a different slug.` },
+          { status: 400 }
+        )
+      }
+    }
+
+    const updatedRoute = await prisma.route.update({
+      where: { slug },
+      data: {
+        name,
+        ...(newSlug && { slug: newSlug }),
+        description,
+      },
+    })
+
+    return NextResponse.json(updatedRoute)
+  } catch (error) {
+    console.error('Error updating route info:', error)
+    return NextResponse.json(
+      { error: 'Failed to update route info' },
+      { status: 500 }
+    )
+  }
+}

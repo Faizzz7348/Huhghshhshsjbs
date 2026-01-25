@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -41,6 +42,8 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
   const [websiteLink, setWebsiteLink] = React.useState("")
   const [qrCodeImageUrl, setQRCodeImageUrl] = React.useState("")
   const [qrCodeDestinationUrl, setQRCodeDestinationUrl] = React.useState("")
+  const [googleMapsLink, setGoogleMapsLink] = React.useState("")
+  const [wazeLink, setWazeLink] = React.useState("")
 
   React.useEffect(() => {
     if (visible && rowData) {
@@ -49,6 +52,8 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
       setWebsiteLink(desc.websiteLink || "")
       setQRCodeImageUrl(desc.qrCodeImageUrl || "")
       setQRCodeDestinationUrl(desc.qrCodeDestinationUrl || "")
+      setGoogleMapsLink(desc.googleMapsLink || "")
+      setWazeLink(desc.wazeLink || "")
       setIsEditing(false)
       setNewKey("")
       setNewValue("")
@@ -85,7 +90,9 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
         ...descriptions,
         websiteLink,
         qrCodeImageUrl,
-        qrCodeDestinationUrl
+        qrCodeDestinationUrl,
+        googleMapsLink,
+        wazeLink
       }
       onSave(updatedDescriptions)
     }
@@ -110,6 +117,10 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
       // Open edit dialog if in edit mode
       if (type === 'familymart') {
         setShowFamilyMartDialog(true)
+      } else if (type === 'googlemaps') {
+        setShowGoogleMapsDialog(true)
+      } else if (type === 'waze') {
+        setShowWazeDialog(true)
       } else if (type === 'website') {
         setShowWebsiteDialog(true)
       } else if (type === 'qrcode') {
@@ -123,11 +134,31 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
       const formattedCode = rowData.code.toString().padStart(4, '0')
       window.open(`https://fmvending.web.app/refill-service/M${formattedCode}`, '_blank')
       setShowFamilyMartDialog(false)
-    } else if (type === 'googlemaps' && rowData?.lat && rowData?.lng) {
-      window.open(`https://www.google.com/maps/search/?api=1&query=${rowData.lat},${rowData.lng}`, '_blank')
+    } else if (type === 'googlemaps') {
+      // Use custom link if available, otherwise use coordinates
+      let url = googleMapsLink
+      if (!url && rowData?.lat && rowData?.lng) {
+        url = `https://www.google.com/maps/search/?api=1&query=${rowData.lat},${rowData.lng}`
+      }
+      if (url) {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url
+        }
+        window.open(url, '_blank')
+      }
       setShowGoogleMapsDialog(false)
-    } else if (type === 'waze' && rowData?.lat && rowData?.lng) {
-      window.open(`https://www.waze.com/ul?ll=${rowData.lat},${rowData.lng}&navigate=yes`, '_blank')
+    } else if (type === 'waze') {
+      // Use custom link if available, otherwise use coordinates
+      let url = wazeLink
+      if (!url && rowData?.lat && rowData?.lng) {
+        url = `https://www.waze.com/ul?ll=${rowData.lat},${rowData.lng}&navigate=yes`
+      }
+      if (url) {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url
+        }
+        window.open(url, '_blank')
+      }
       setShowWazeDialog(false)
     } else if (type === 'website' && websiteLink) {
       let url = websiteLink
@@ -271,16 +302,18 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   className="h-11 w-11 hover:bg-transparent"
                   title="FamilyMart"
                 >
-                  <img 
+                  <Image 
                     src="/FamilyMart.png" 
                     alt="FamilyMart" 
+                    width={44}
+                    height={44}
                     className="h-11 w-11 hover:scale-110 transition-transform"
                   />
                 </Button>
               )}
 
-              {/* Google Maps Button - only show if lat/lng exist */}
-              {rowData?.lat && rowData?.lng && (
+              {/* Google Maps Button - show if custom link exists OR (lat/lng exists and in edit mode) */}
+              {(googleMapsLink || (actualEditMode && rowData?.lat && rowData?.lng)) && (
                 <Button
                   onClick={() => handleShortcutClick('googlemaps')}
                   variant="ghost"
@@ -288,16 +321,18 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   className="h-11 w-11 hover:bg-transparent"
                   title="Google Maps"
                 >
-                  <img 
+                  <Image 
                     src="/Gmaps.png" 
                     alt="Google Maps" 
+                    width={44}
+                    height={44}
                     className="h-11 w-11 hover:scale-110 transition-transform"
                   />
                 </Button>
               )}
 
-              {/* Waze Button - only show if lat/lng exist */}
-              {rowData?.lat && rowData?.lng && (
+              {/* Waze Button - show if custom link exists OR (lat/lng exists and in edit mode) */}
+              {(wazeLink || (actualEditMode && rowData?.lat && rowData?.lng)) && (
                 <Button
                   onClick={() => handleShortcutClick('waze')}
                   variant="ghost"
@@ -305,9 +340,11 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   className="h-10 w-10 hover:bg-transparent"
                   title="Waze"
                 >
-                  <img 
+                  <Image 
                     src="/waze_app_icon-logo_brandlogos.net_l82da.png" 
                     alt="Waze" 
+                    width={32}
+                    height={32}
                     className="h-8 w-8 hover:scale-110 transition-transform"
                   />
                 </Button>
@@ -337,9 +374,11 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   className="h-10 w-10 hover:bg-transparent"
                   title="QR Code"
                 >
-                  <img 
+                  <Image 
                     src="/QRcodewoi.png" 
                     alt="QR Code" 
+                    width={32}
+                    height={32}
                     className="h-8 w-8 hover:scale-110 transition-transform"
                   />
                 </Button>
@@ -492,11 +531,11 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
 
           {/* Google Maps Dialog */}
           <Dialog open={showGoogleMapsDialog} onOpenChange={setShowGoogleMapsDialog}>
-            <DialogContent>
+            <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
               <DialogHeader>
-                <DialogTitle>Open in Google Maps?</DialogTitle>
+                <DialogTitle>{actualEditMode ? 'Google Maps Direction Link' : 'Open in Google Maps?'}</DialogTitle>
                 <DialogDescription>
-                  Do you want to open this location in Google Maps?
+                  {actualEditMode ? 'Add a custom direction link or use auto-generated coordinates' : 'Do you want to open this location in Google Maps?'}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -505,28 +544,54 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   <Input value={rowData?.location || ''} disabled />
                 </div>
                 <div className="space-y-2">
-                  <Label>Coordinates</Label>
-                  <Input value={`${rowData?.lat}, ${rowData?.lng}`} disabled />
+                  <Label>Latitude</Label>
+                  <Input value={rowData?.lat || ''} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label>Longitude</Label>
+                  <Input value={rowData?.lng || ''} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="googlemaps-link">Custom Direction Link (Optional)</Label>
+                  <Input 
+                    id="googlemaps-link"
+                    value={googleMapsLink} 
+                    onChange={(e) => setGoogleMapsLink(e.target.value)}
+                    placeholder="https://maps.app.goo.gl/..."
+                    disabled={!actualEditMode}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {googleMapsLink ? 'Custom link will be used' : 'Auto-generated from coordinates if left empty'}
+                  </p>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowGoogleMapsDialog(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => confirmAndOpenLink('googlemaps')}>
-                  Open in Google Maps
-                </Button>
+                {actualEditMode ? (
+                  <Button onClick={() => {
+                    setDescriptions(prev => ({ ...prev, googleMapsLink }))
+                    setShowGoogleMapsDialog(false)
+                  }}>
+                    Save
+                  </Button>
+                ) : (
+                  <Button onClick={() => confirmAndOpenLink('googlemaps')}>
+                    Open in Google Maps
+                  </Button>
+                )}
               </DialogFooter>
             </DialogContent>
           </Dialog>
 
           {/* Waze Dialog */}
           <Dialog open={showWazeDialog} onOpenChange={setShowWazeDialog}>
-            <DialogContent>
+            <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
               <DialogHeader>
-                <DialogTitle>Open in Waze?</DialogTitle>
+                <DialogTitle>{actualEditMode ? 'Waze Direction Link' : 'Open in Waze?'}</DialogTitle>
                 <DialogDescription>
-                  Do you want to navigate to this location using Waze?
+                  {actualEditMode ? 'Add a custom direction link or use auto-generated coordinates' : 'Do you want to navigate to this location using Waze?'}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -535,17 +600,43 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                   <Input value={rowData?.location || ''} disabled />
                 </div>
                 <div className="space-y-2">
-                  <Label>Coordinates</Label>
-                  <Input value={`${rowData?.lat}, ${rowData?.lng}`} disabled />
+                  <Label>Latitude</Label>
+                  <Input value={rowData?.lat || ''} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label>Longitude</Label>
+                  <Input value={rowData?.lng || ''} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waze-link">Custom Direction Link (Optional)</Label>
+                  <Input 
+                    id="waze-link"
+                    value={wazeLink} 
+                    onChange={(e) => setWazeLink(e.target.value)}
+                    placeholder="https://waze.com/ul?ll=..."
+                    disabled={!actualEditMode}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {wazeLink ? 'Custom link will be used' : 'Auto-generated from coordinates if left empty'}
+                  </p>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowWazeDialog(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => confirmAndOpenLink('waze')}>
-                  Open in Waze
-                </Button>
+                {actualEditMode ? (
+                  <Button onClick={() => {
+                    setDescriptions(prev => ({ ...prev, wazeLink }))
+                    setShowWazeDialog(false)
+                  }}>
+                    Save
+                  </Button>
+                ) : (
+                  <Button onClick={() => confirmAndOpenLink('waze')}>
+                    Open in Waze
+                  </Button>
+                )}
               </DialogFooter>
             </DialogContent>
           </Dialog>
