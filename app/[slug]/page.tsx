@@ -72,7 +72,6 @@ export default function RoutePage() {
   const [routeId, setRouteId] = useState<number>(1)
   const [routeName, setRouteName] = useState<string>('')
   const [notFound, setNotFound] = useState(false)
-  const [duplicateCodes, setDuplicateCodes] = useState<Map<number, Array<{id: number, location: string, routeName: string, routeSlug: string}>>>(new Map())
   const [checkingDuplicate, setCheckingDuplicate] = useState(false)
 
   useEffect(() => {

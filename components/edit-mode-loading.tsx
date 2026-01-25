@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2, Save, CheckCircle2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useEditMode } from "@/contexts/edit-mode-context"
 
 export function EditModeLoading() {

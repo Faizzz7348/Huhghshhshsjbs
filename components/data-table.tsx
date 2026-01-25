@@ -554,7 +554,6 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     columns,

@@ -116,12 +116,12 @@ export default function Home() {
               <div className="mt-8 rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 shadow-lg">
                 <h3 className="font-semibold text-lg mb-3">Quick Actions</h3>
                 <div className="flex flex-wrap gap-2">
-                  <a href="/kl-7" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
+                  <Link href="/kl-7" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
                     View KL Routes
-                  </a>
-                  <a href="/sl-1" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
+                  </Link>
+                  <Link href="/sl-1" className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary/80 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl font-medium">
                     View SL Routes
-                  </a>
+                  </Link>
                   <button className="px-4 py-2 rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/10 hover:border-primary/40 hover:scale-105 transition-all duration-300 font-medium">
                     Settings
                   </button>
