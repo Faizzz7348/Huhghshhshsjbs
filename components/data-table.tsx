@@ -1277,7 +1277,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                 <div className="flex-1">
                   <p className="font-semibold text-destructive">Warning: Permanent Deletion</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Deleting "<strong>{routeInfo.name}</strong>" will permanently remove:
+                    Deleting &ldquo;<strong>{routeInfo.name}</strong>&rdquo; will permanently remove:
                   </p>
                   <ul className="text-sm text-muted-foreground mt-2 ml-4 list-disc space-y-1">
                     <li>The route and all its settings</li>
