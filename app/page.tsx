@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { AppSidebar } from "@/components/app-sidebar"
 import { ModeToggle } from "@/components/mode-toggle"
 import { usePageLoading } from "@/contexts/page-loading-context"
