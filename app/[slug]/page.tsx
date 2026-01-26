@@ -24,6 +24,7 @@ import {
 import { Eye, EyeOff } from "lucide-react"
 import dynamic from "next/dynamic"
 import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table-skeleton"
 import { Delivery } from "@/app/data"
 import { Button } from "@/components/ui/button"
 import {
@@ -73,6 +74,7 @@ export default function RoutePage() {
   const [routeName, setRouteName] = useState<string>('')
   const [notFound, setNotFound] = useState(false)
   const [checkingDuplicate, setCheckingDuplicate] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const duplicateCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -83,6 +85,7 @@ export default function RoutePage() {
   // Fetch data from database
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       try {
         const response = await fetch(`/api/routes/${slug}/locations`)
         if (response.ok) {
@@ -98,6 +101,8 @@ export default function RoutePage() {
       } catch (error) {
         console.error('Error fetching locations:', error)
         setNotFound(true)
+      } finally {
+        setIsLoading(false)
       }
     }
     
@@ -367,18 +372,22 @@ export default function RoutePage() {
             </div>
 
             <div>
-              <DataTable 
-                data={deliveryData} 
-                onLocationClick={handleLocationClick} 
-                onEditRow={handleEditRow}
-                onDeleteRow={handleDeleteRow}
-                onAddRow={handleAddRow}
-                onPowerModeChange={handlePowerModeChange}
-                onMoveComplete={handleMoveComplete}
-                currentRouteSlug={slug}
-                currentRouteId={routeId}
-                showMap={showMap} 
-              />
+              {isLoading ? (
+                <DataTableSkeleton rows={8} columns={7} />
+              ) : (
+                <DataTable 
+                  data={deliveryData} 
+                  onLocationClick={handleLocationClick} 
+                  onEditRow={handleEditRow}
+                  onDeleteRow={handleDeleteRow}
+                  onAddRow={handleAddRow}
+                  onPowerModeChange={handlePowerModeChange}
+                  onMoveComplete={handleMoveComplete}
+                  currentRouteSlug={slug}
+                  currentRouteId={routeId}
+                  showMap={showMap} 
+                />
+              )}
             </div>
           </div>
         </div>

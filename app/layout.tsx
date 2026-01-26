@@ -6,6 +6,7 @@ import { EditModeProvider } from "@/contexts/edit-mode-context";
 import { PageLoadingProvider } from "@/contexts/page-loading-context";
 import { EditModeLoading } from "@/components/edit-mode-loading";
 import { PageLoading } from "@/components/page-loading";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
               {children}
               <EditModeLoading />
               <PageLoading />
+              <Toaster />
             </EditModeProvider>
           </PageLoadingProvider>
         </ThemeProvider>

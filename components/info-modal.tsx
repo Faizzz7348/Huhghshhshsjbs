@@ -288,11 +288,11 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
           </div>
 
           {/* Shortcuts Section */}
-          <div className="space-y-3">
+          <div className="space-y-3 mt-6 pt-4 border-t">
             <h3 className="text-sm font-semibold uppercase text-muted-foreground text-center">
               Shortcuts
             </h3>
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-3 justify-center p-2">
               {/* FamilyMart Button - only show if code is numeric */}
               {rowData?.code && !isNaN(Number(rowData.code)) && (
                 <Button
@@ -350,37 +350,43 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                 </Button>
               )}
 
-              {/* Website Button - only show if websiteLink exists */}
-              {websiteLink && (
+              {/* Website Button - show if websiteLink exists OR in edit mode */}
+              {(websiteLink || actualEditMode) && (
                 <Button
                   onClick={() => handleShortcutClick('website')}
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 hover:bg-transparent"
-                  title="Website"
+                  className={`h-12 w-12 hover:bg-transparent ${!websiteLink && actualEditMode ? 'opacity-50 hover:opacity-100' : ''}`}
+                  title={websiteLink ? "Website" : "Add Website Link"}
                 >
-                  <svg className="h-8 w-8 hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-10 w-10 hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zm5 16H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z"/>
                   </svg>
+                  {!websiteLink && actualEditMode && (
+                    <Plus className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground rounded-full" />
+                  )}
                 </Button>
               )}
 
-              {/* QR Code Button - only show if qrCodeImageUrl exists */}
-              {qrCodeImageUrl && (
+              {/* QR Code Button - show if qrCodeImageUrl exists OR in edit mode */}
+              {(qrCodeImageUrl || actualEditMode) && (
                 <Button
                   onClick={() => handleShortcutClick('qrcode')}
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 hover:bg-transparent"
-                  title="QR Code"
+                  className={`h-12 w-12 hover:bg-transparent ${!qrCodeImageUrl && actualEditMode ? 'opacity-50 hover:opacity-100' : ''}`}
+                  title={qrCodeImageUrl ? "QR Code" : "Add QR Code"}
                 >
                   <Image 
                     src="/QRcodewoi.png" 
                     alt="QR Code" 
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 hover:scale-110 transition-transform"
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 hover:scale-110 transition-transform"
                   />
+                  {!qrCodeImageUrl && actualEditMode && (
+                    <Plus className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-primary-foreground rounded-full" />
+                  )}
                 </Button>
               )}
             </div>
