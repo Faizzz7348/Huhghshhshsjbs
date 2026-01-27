@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -18,21 +18,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafbfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1117" }
+  ]
+};
+
 export const metadata: Metadata = {
   title: "VM Route Manager - Vending Management",
   description: "Professional Vending Machine Route Management System - Manage routes, locations, power modes, and service operations efficiently",
   manifest: "/manifest.json",
-  themeColor: "#fafbfc",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "VM Route"
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
   },
   icons: {
     icon: "/icon-192x192.png",
@@ -47,10 +51,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="h-full">
-      <head>
-        <meta name="theme-color" content="#fafbfc" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-gradient-to-br from-sky-50 via-blue-50/40 to-cyan-50/30 dark:from-slate-950 dark:via-blue-950/80 dark:to-indigo-950/60`}
         suppressHydrationWarning
