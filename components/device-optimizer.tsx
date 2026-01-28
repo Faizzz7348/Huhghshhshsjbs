@@ -8,11 +8,33 @@ export function DeviceOptimizer() {
     const setVH = () => {
       const vh = window.innerHeight * 0.01
       document.documentElement.style.setProperty('--vh', `${vh}px`)
+      
+      // Force reflow to apply changes immediately
+      document.body.style.display = 'none'
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      document.body.offsetHeight
+      document.body.style.display = ''
     }
     
     setVH()
     window.addEventListener('resize', setVH)
     window.addEventListener('orientationchange', setVH)
+    
+    // Prevent zoom on input focus (iOS Safari)
+    const preventZoom = () => {
+      const inputs = document.querySelectorAll('input, select, textarea')
+      inputs.forEach((input) => {
+        if (input instanceof HTMLElement) {
+          const currentFontSize = window.getComputedStyle(input).fontSize
+          if (parseFloat(currentFontSize) < 16) {
+            input.style.fontSize = '16px'
+          }
+        }
+      })
+    }
+    
+    preventZoom()
+    window.addEventListener('resize', preventZoom)
     
     // Add device class to body for CSS targeting
     const updateDeviceClass = () => {

@@ -26,6 +26,12 @@ export function SearchForm({ onSearch, ...props }: SearchFormProps) {
             onChange={(e) => onSearch?.(e.target.value)}
             autoComplete="off"
             autoFocus={false}
+            onFocus={(e) => {
+              // Blur immediately on mobile to prevent keyboard popup
+              if (window.innerWidth < 768) {
+                e.target.blur()
+              }
+            }}
           />
           <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
         </SidebarGroupContent>

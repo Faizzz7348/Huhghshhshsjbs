@@ -220,9 +220,9 @@ body {
 
 /* Responsive improvements - handle all screen sizes and orientations */
 @media (orientation: landscape) and (max-height: 500px) {
-  /* On short landscape screens, reduce padding */
-  .pt-6 {
-    padding-top: 1rem !important;
+  /* On short landscape screens, ensure consistent spacing */
+  .flex-col.gap-2 {
+    gap: 0.5rem;
   }
 }
 
