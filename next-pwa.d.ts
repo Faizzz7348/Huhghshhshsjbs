@@ -18,6 +18,7 @@ declare module 'next-pwa' {
         cacheableResponse?: {
           statuses?: number[];
         };
+        networkTimeoutSeconds?: number;
       };
     }>;
     publicExcludes?: string[];
