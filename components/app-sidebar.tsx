@@ -396,9 +396,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar {...props} className="pt-safe pb-safe">
-      <div className="flex flex-col h-full">
-        <SidebarHeader className="shrink-0 pl-safe">
+    <Sidebar {...props}>
+      <div className="flex flex-col h-full pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+        <SidebarHeader className="shrink-0">
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
