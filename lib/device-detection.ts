@@ -1,5 +1,7 @@
 "use client"
 
+import React from 'react'
+
 export interface DeviceInfo {
   isMobile: boolean
   isTablet: boolean
@@ -40,8 +42,8 @@ export function getDeviceInfo(): DeviceInfo {
   const isTablet = screenWidth >= 768 && screenWidth < 1024
   const isDesktop = screenWidth >= 1024
   
-  // OS detection
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream
+  // OS detection - check for iOS devices
+  const isIOS = /iPad|iPhone|iPod/.test(ua)
   const isAndroid = /Android/.test(ua)
   
   // Browser detection
@@ -77,11 +79,11 @@ export function getDeviceInfo(): DeviceInfo {
 }
 
 export function useDeviceDetection() {
-  if (typeof window === 'undefined') return getDeviceInfo()
-  
   const [deviceInfo, setDeviceInfo] = React.useState<DeviceInfo>(getDeviceInfo())
   
   React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     const handleResize = () => {
       setDeviceInfo(getDeviceInfo())
     }
@@ -97,6 +99,3 @@ export function useDeviceDetection() {
   
   return deviceInfo
 }
-
-// React import for hook
-import React from 'react'
