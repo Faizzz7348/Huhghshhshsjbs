@@ -51,6 +51,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="h-full">
+      <head>
+        <meta name="theme-color" content="#fafbfc" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-background`}
         suppressHydrationWarning

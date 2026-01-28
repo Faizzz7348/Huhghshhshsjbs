@@ -4,7 +4,7 @@
   "description": "Professional Vending Machine Route Management System - Manage routes, locations, power modes, and service operations efficiently",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fafbfc",
+  "background_color": "#ffffff",
   "theme_color": "#fafbfc",
   "orientation": "portrait-primary",
   "icons": [

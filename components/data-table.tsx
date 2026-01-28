@@ -159,6 +159,16 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
     { id: "delivery", label: "Delivery", visible: true },
   ])
   const [settingsDropdownOpen, setSettingsDropdownOpen] = React.useState(false)
+  const [sizeCustomizeOpen, setSizeCustomizeOpen] = React.useState(false)
+  const [rowHeight, setRowHeight] = React.useState(35)
+  const [columnWidths, setColumnWidths] = React.useState<{ [key: string]: number }>({
+    rowNumber: 60,
+    code: 100,
+    location: 250,
+    delivery: 150,
+    powerMode: 120,
+    actions: 180,
+  })
   const duplicateCheckTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   React.useEffect(() => {
@@ -353,7 +363,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
         return <div className="text-center font-bold text-primary">{rowIndex}</div>
       },
       enableSorting: false,
-      size: 60,
+      size: columnWidths.rowNumber,
     },
     ...columnSettings.filter(col => col.visible).map((colSetting): ColumnDef<Delivery> => {
       if (colSetting.id === "code") {
@@ -371,6 +381,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               </div>
             )
           },
+          size: columnWidths.code,
         }
       } else if (colSetting.id === "location") {
         return {
@@ -398,6 +409,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               </div>
             )
           },
+          size: columnWidths.location,
         }
       } else {
         return {
@@ -411,6 +423,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               </div>
             )
           },
+          size: columnWidths.delivery,
         }
       }
     }),
@@ -477,6 +490,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
           </div>
         )
       },
+      size: columnWidths.actions,
     },
   ]
 
@@ -547,6 +561,12 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               >
                 Row Settings
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSizeCustomizeOpen(true)}
+                className="cursor-pointer"
+              >
+                Size Customize
+              </DropdownMenuItem>
               {isEditMode && (
                 <>
                   <DropdownMenuItem
@@ -581,7 +601,16 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               <tr key={headerGroup.id} className="border-b sticky top-0 z-[30]">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} className="h-11 px-4 text-center align-middle font-semibold text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl" style={{ fontSize: '12px' }}>
+                    <th 
+                      key={header.id} 
+                      className="h-11 px-4 text-center align-middle font-semibold text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl" 
+                      style={{ 
+                        fontSize: '12px',
+                        width: header.column.getSize(),
+                        minWidth: header.column.getSize(),
+                        maxWidth: header.column.getSize(),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -612,7 +641,16 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="p-3 align-middle text-center font-semibold">
+                      <td 
+                        key={cell.id} 
+                        className="p-3 align-middle text-center font-semibold"
+                        style={{ 
+                          height: rowHeight,
+                          width: cell.column.getSize(),
+                          minWidth: cell.column.getSize(),
+                          maxWidth: cell.column.getSize(),
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           { ...cell.getContext(), rowIndex }
@@ -1223,6 +1261,280 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               ) : (
                 'Delete Permanently'
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Size Customize Dialog */}
+      <Dialog open={sizeCustomizeOpen} onOpenChange={setSizeCustomizeOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Customize Row & Column Sizes</DialogTitle>
+            <DialogDescription>
+              Adjust the height and width of table elements. Changes apply immediately.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Row Height Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 bg-gradient-to-b from-primary to-primary/40 rounded-full" />
+                <Label className="text-base font-semibold">Row Height</Label>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setRowHeight(Math.max(25, rowHeight - 5))}
+                  className="h-9 w-9 rounded-full"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="flex-1">
+                  <Input
+                    type="number"
+                    value={rowHeight}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 25 && val <= 100) {
+                        setRowHeight(val)
+                      }
+                    }}
+                    min={25}
+                    max={100}
+                    className="text-center font-bold"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setRowHeight(Math.min(100, rowHeight + 5))}
+                  className="h-9 w-9 rounded-full"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground w-16">px</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Range: 25px - 100px</p>
+            </div>
+
+            {/* Column Widths Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-1 bg-gradient-to-b from-primary to-primary/40 rounded-full" />
+                <Label className="text-base font-semibold">Column Widths</Label>
+              </div>
+
+              {/* Row Number Column */}
+              <div className="space-y-2">
+                <Label className="text-sm">Row Number</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, rowNumber: Math.max(40, prev.rowNumber - 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={columnWidths.rowNumber}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 40 && val <= 150) {
+                        setColumnWidths(prev => ({ ...prev, rowNumber: val }))
+                      }
+                    }}
+                    min={40}
+                    max={150}
+                    className="text-center text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, rowNumber: Math.min(150, prev.rowNumber + 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground w-16">px</span>
+                </div>
+              </div>
+
+              {/* Code Column */}
+              <div className="space-y-2">
+                <Label className="text-sm">Code</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, code: Math.max(60, prev.code - 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={columnWidths.code}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 60 && val <= 200) {
+                        setColumnWidths(prev => ({ ...prev, code: val }))
+                      }
+                    }}
+                    min={60}
+                    max={200}
+                    className="text-center text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, code: Math.min(200, prev.code + 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground w-16">px</span>
+                </div>
+              </div>
+
+              {/* Location Column */}
+              <div className="space-y-2">
+                <Label className="text-sm">Location</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, location: Math.max(150, prev.location - 20) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={columnWidths.location}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 150 && val <= 500) {
+                        setColumnWidths(prev => ({ ...prev, location: val }))
+                      }
+                    }}
+                    min={150}
+                    max={500}
+                    className="text-center text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, location: Math.min(500, prev.location + 20) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground w-16">px</span>
+                </div>
+              </div>
+
+              {/* Delivery Column */}
+              <div className="space-y-2">
+                <Label className="text-sm">Delivery</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, delivery: Math.max(100, prev.delivery - 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={columnWidths.delivery}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 100 && val <= 300) {
+                        setColumnWidths(prev => ({ ...prev, delivery: val }))
+                      }
+                    }}
+                    min={100}
+                    max={300}
+                    className="text-center text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, delivery: Math.min(300, prev.delivery + 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground w-16">px</span>
+                </div>
+              </div>
+
+              {/* Actions Column */}
+              <div className="space-y-2">
+                <Label className="text-sm">Actions</Label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, actions: Math.max(120, prev.actions - 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    type="number"
+                    value={columnWidths.actions}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value)
+                      if (!isNaN(val) && val >= 120 && val <= 300) {
+                        setColumnWidths(prev => ({ ...prev, actions: val }))
+                      }
+                    }}
+                    min={120}
+                    max={300}
+                    className="text-center text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setColumnWidths(prev => ({ ...prev, actions: Math.min(300, prev.actions + 10) }))}
+                    className="h-8 w-8 rounded-full"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground w-16">px</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                // Reset to defaults
+                setRowHeight(35)
+                setColumnWidths({
+                  rowNumber: 60,
+                  code: 100,
+                  location: 250,
+                  delivery: 150,
+                  powerMode: 120,
+                  actions: 180,
+                })
+              }}
+            >
+              Reset to Default
+            </Button>
+            <Button onClick={() => setSizeCustomizeOpen(false)}>
+              Done
             </Button>
           </DialogFooter>
         </DialogContent>
