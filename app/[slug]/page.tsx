@@ -254,7 +254,8 @@ export default function RoutePage() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b bg-background backdrop-blur-xl shadow-sm px-4 md:left-64 before:absolute before:inset-x-0 before:top-0 before:h-screen before:-z-10 before:bg-background">
+          <div className="fixed top-0 left-0 right-0 z-50 md:left-64 -mt-20 pt-20">
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background backdrop-blur-xl shadow-sm px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
@@ -275,6 +276,7 @@ export default function RoutePage() {
             </Breadcrumb>
             <ModeToggle />
           </header>
+          </div>
           <div className="pt-16 flex flex-1 flex-col gap-4 p-4">
             <div className="flex flex-col items-center justify-center flex-1 gap-4">
               <h1 className="text-4xl font-bold text-destructive">Route Not Found</h1>
@@ -293,7 +295,8 @@ export default function RoutePage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b bg-background backdrop-blur-xl shadow-sm px-4 md:left-64 before:absolute before:inset-x-0 before:top-0 before:h-screen before:-z-10 before:bg-background">
+        <div className="fixed top-0 left-0 right-0 z-50 md:left-64 -mt-20 pt-20">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background backdrop-blur-xl shadow-sm px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator
             orientation="vertical"
@@ -333,6 +336,7 @@ export default function RoutePage() {
           </div>
           <ModeToggle />
         </header>
+        </div>
         <div className="pt-16 flex flex-1 flex-col gap-4 p-4 overflow-y-auto">
           <div 
             className={`overflow-hidden transition-all duration-500 ease-in-out ${
