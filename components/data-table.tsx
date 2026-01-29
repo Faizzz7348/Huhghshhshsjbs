@@ -553,7 +553,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
           </DropdownMenu>
         </div>
         <div className="overflow-x-auto overflow-y-auto max-h-[400px] bg-muted/10 dark:bg-muted/5 transition-all duration-300 ease-in-out">
-        <table className="w-auto caption-bottom text-sm relative">
+        <table className="min-w-full w-auto caption-bottom text-sm relative" style={{ tableLayout: 'auto' }}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b sticky top-0 z-[30]">
