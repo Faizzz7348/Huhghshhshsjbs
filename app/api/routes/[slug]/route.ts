@@ -25,7 +25,7 @@ export async function GET(
     }
 
     return NextResponse.json(route)
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch route' },
       { status: 500 }
@@ -93,7 +93,7 @@ export async function PUT(
     })
 
     return NextResponse.json(updatedRoute)
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to update route' },
       { status: 500 }
@@ -145,7 +145,7 @@ export async function PATCH(
     })
 
     return NextResponse.json(updatedRoute)
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to update route info' },
       { status: 500 }
@@ -190,7 +190,7 @@ export async function DELETE(
         locationCount: route._count.locations
       }
     })
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete route' },
       { status: 500 }

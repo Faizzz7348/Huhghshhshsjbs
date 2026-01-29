@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { Delivery } from "@/app/data"
 import L from "leaflet"
@@ -74,11 +74,7 @@ function FitBounds({ locations, selectedLocation }: { locations: Delivery[]; sel
 
 export function MapComponent({ locations, selectedLocation }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
+  const [isVisible] = useState(true)
   
   // Filter valid locations (dengan koordinat yang valid)
   const validLocations = useMemo(() => {

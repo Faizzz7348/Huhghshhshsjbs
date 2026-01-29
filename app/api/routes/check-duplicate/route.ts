@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       exists: false,
       existingRoute: null
     })
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to check duplicate' }, { status: 500 })
   }
 }

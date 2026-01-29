@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(newLocation, { status: 201 })
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to create location' }, { status: 500 })
   }
 }
