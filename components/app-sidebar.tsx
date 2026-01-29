@@ -454,10 +454,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ) || []
                 console.log('Rendering menu item:', item.title, 'items count:', filteredItems.length)
                 
-                // Show Route List menu even if empty (for Add New Route button)
-                const shouldShowMenu = filteredItems.length > 0 || (item.title === "Route List" && isEditMode)
+                // Determine if this should be a collapsible menu or simple link
+                const hasItems = filteredItems.length > 0 || (item.title === "Route List" && isEditMode)
                 
-                return shouldShowMenu ? (
+                // If no items to show and not a special case, render as simple link
+                if (!hasItems) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link href={item.url} className="font-bold">
+                          {Icon && (
+                            <div 
+                              className="h-4 w-4 flex items-center justify-center"
+                              style={{
+                                color: item.title === "Home" ? "#3b82f6" : 
+                                       item.title === "Calendar" ? "#f59e0b" :
+                                       item.title === "Route List" ? "#22c55e" : undefined
+                              }}
+                            >
+                              <Icon className="h-full w-full" />
+                            </div>
+                          )}
+                          {item.title}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                }
+                
+                // Render as collapsible menu if has items
+                return (
                   <Collapsible
                     key={item.title}
                     open={openMenu === item.title}
@@ -474,6 +500,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               className="h-4 w-4 flex items-center justify-center"
                               style={{
                                 color: item.title === "Home" ? "#3b82f6" : 
+                                       item.title === "Calendar" ? "#f59e0b" :
                                        item.title === "Route List" ? "#22c55e" : undefined
                               }}
                             >
@@ -522,15 +549,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </CollapsibleContent>
                     </SidebarMenuItem>
                   </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link href={item.url} className="font-bold">
-                        {Icon && <Icon className="h-4 w-4" />}
-                        {item.title}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
                 )
               })}
             </SidebarMenu>
