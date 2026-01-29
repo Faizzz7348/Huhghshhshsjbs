@@ -66,11 +66,13 @@
     background: var(--muted) / 0.3;
     border-radius: 12px;
     border: 1px solid var(--border);
+    text-align: center;
 }
 
 .shortcuts-title-info-modal {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     margin: 0 0 16px 0;
     font-size: 15px;
@@ -81,6 +83,7 @@
 .shortcuts-buttons-grid {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 12px;
 }
 
@@ -112,8 +115,6 @@
 }
 
 .shortcut-icon-img {
-    width: 24px;
-    height: 24px;
     object-fit: contain;
     flex-shrink: 0;
 }
@@ -137,11 +138,6 @@
 
 .shortcut-icon-only:active {
     transform: scale(0.95);
-}
-
-.shortcut-icon-only .shortcut-icon-img {
-    width: 48px;
-    height: 48px;
 }
 
 .shortcut-label {

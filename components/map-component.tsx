@@ -94,39 +94,27 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
     }
   }, [selectedLocation, defaultCenter])
   
-  // Create custom icons for markers
-  const createCustomIcon = (color: string, isSelected: boolean) => {
-    const size = isSelected ? 35 : 25
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `
-        <div style="
-          width: ${size}px;
-          height: ${size}px;
-          background: ${color};
-          border: 3px solid white;
-          border-radius: 50%;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          color: white;
-          font-size: ${isSelected ? '14px' : '10px'};
-          ${isSelected ? 'animation: pulse 2s infinite;' : ''}
-        ">
-          ${isSelected ? '📍' : ''}
-        </div>
-        <style>
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-          }
-        </style>
-      `,
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size / 2],
-      popupAnchor: [0, -(size / 2)]
+  // Create standard Leaflet icons for markers (red for selected, blue for others)
+  const createStandardIcon = (isSelected: boolean) => {
+    if (isSelected) {
+      return new L.Icon({
+        iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+        iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [20, 32],
+        iconAnchor: [10, 32],
+        popupAnchor: [0, -28],
+        shadowSize: [32, 32]
+      })
+    }
+    return new L.Icon({
+      iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+      iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+      iconSize: [20, 32],
+      iconAnchor: [10, 32],
+      popupAnchor: [0, -28],
+      shadowSize: [32, 32]
     })
   }
 
@@ -150,13 +138,12 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
         {/* Render all markers from the datatable */}
         {validLocations.map((location) => {
           const isSelected = selectedLocation?.id === location.id
-          const markerColor = location.color || "#3b82f6"
           
           return (
             <Marker
               key={location.id}
               position={[location.lat, location.lng]}
-              icon={createCustomIcon(markerColor, isSelected)}
+              icon={createStandardIcon(isSelected)}
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
@@ -187,12 +174,20 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
         })}
       </MapContainer>
       
-      {/* Info badge showing number of markers */}
-      <div className="absolute top-4 right-4 z-[1000] bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-        <p className="text-sm font-semibold">
-          📍 {validLocations.length} location{validLocations.length !== 1 ? 's' : ''}
-        </p>
-      </div>
+      {/* Reset zoom button */}
+      <button 
+        onClick={() => {
+          if (mapRef.current) {
+            mapRef.current.setView(defaultCenter, 10)
+          }
+        }}
+        className="absolute top-4 right-4 z-[1000] bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        title="Reset zoom"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+        </svg>
+      </button>
     </div>
   )
 }

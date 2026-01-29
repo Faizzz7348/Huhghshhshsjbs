@@ -81,7 +81,7 @@ const data = {
       items: [],
     },
     {
-      title: "Route VM",
+      title: "Route List",
       url: "#",
       icon: MapPin,
       items: [],
@@ -448,8 +448,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ) || []
                 console.log('Rendering menu item:', item.title, 'items count:', filteredItems.length)
                 
-                // Show Route VM menu even if empty (for Add New Route button)
-                const shouldShowMenu = filteredItems.length > 0 || (item.title === "Route VM" && isEditMode)
+                // Show Route List menu even if empty (for Add New Route button)
+                const shouldShowMenu = filteredItems.length > 0 || (item.title === "Route List" && isEditMode)
                 
                 return shouldShowMenu ? (
                   <Collapsible
@@ -468,7 +468,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               className="h-4 w-4 flex items-center justify-center"
                               style={{
                                 color: item.title === "Home" ? "#3b82f6" : 
-                                       item.title === "Route VM" ? "#22c55e" : undefined
+                                       item.title === "Route List" ? "#22c55e" : undefined
                               }}
                             >
                               <Icon className="h-full w-full" />
@@ -500,8 +500,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               </SidebarMenuSubItem>
                             )
                           })}
-                          {/* Add Route Button - Only show in edit mode for Route VM */}
-                          {isEditMode && item.title === "Route VM" && (
+                          {/* Add Route Button - Only show in edit mode for Route List */}
+                          {isEditMode && item.title === "Route List" && (
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton 
                                 onClick={() => openAddRouteDialog(item.title)}

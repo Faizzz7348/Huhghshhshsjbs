@@ -207,7 +207,7 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
 
   return (
     <Dialog open={visible} onOpenChange={handleCancel}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] p-0 info-modal-card" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-[550px] max-h-[85vh] p-0 info-modal-card" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogTitle className="sr-only">Location Details</DialogTitle>
         <div className="info-modal-card-header">
           <h2 className="info-modal-card-title">Location Details</h2>
@@ -375,7 +375,8 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     href={googleMapsLink || `https://www.google.com/maps/search/?api=1&query=${rowData.lat},${rowData.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shortcut-btn shortcut-google-maps"
+                    className="shortcut-icon-only"
+                    title="Google Maps"
                     onClick={(e) => {
                       if (actualEditMode) {
                         e.preventDefault()
@@ -386,13 +387,12 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     <Image 
                       src="/Gmaps.png" 
                       alt="Google Maps" 
-                      width={20}
-                      height={20}
+                      width={48}
+                      height={48}
                       className="shortcut-icon-img"
                     />
-                    <span className="shortcut-label">Google Maps</span>
                     {actualEditMode && (
-                      <Pencil className="h-3.5 w-3.5 ml-1" />
+                      <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )}
                   </a>
                 )
@@ -411,7 +411,8 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     href={wazeLink || `https://www.waze.com/ul?ll=${rowData.lat},${rowData.lng}&navigate=yes`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shortcut-btn shortcut-waze"
+                    className="shortcut-icon-only"
+                    title="Waze"
                     onClick={(e) => {
                       if (actualEditMode) {
                         e.preventDefault()
@@ -422,13 +423,12 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     <Image 
                       src="/waze_app_icon-logo_brandlogos.net_l82da.png" 
                       alt="Waze" 
-                      width={20}
-                      height={20}
+                      width={35}
+                      height={35}
                       className="shortcut-icon-img"
                     />
-                    <span className="shortcut-label">Waze</span>
                     {actualEditMode && (
-                      <Pencil className="h-3.5 w-3.5 ml-1" />
+                      <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )}
                   </a>
                 )
