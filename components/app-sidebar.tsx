@@ -166,6 +166,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             ...prevData[1],
+            items: [],
+          },
+          {
+            ...prevData[2],
             items: allRoutes,
           },
         ])
