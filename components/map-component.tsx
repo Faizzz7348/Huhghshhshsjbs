@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { Delivery } from "@/app/data"
 import L from "leaflet"
@@ -25,7 +25,12 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }
   const map = useMap()
   
   useEffect(() => {
-    map.setView(center, zoom, { animate: true })
+    map.setView(center, zoom, { 
+      animate: true,
+      duration: 1.2,
+      easeLinearity: 0.05,
+      noMoveStart: false
+    })
   }, [map, center, zoom])
   
   return null
@@ -47,10 +52,20 @@ function FitBounds({ locations, selectedLocation }: { locations: Delivery[]; sel
     if (validLocations.length === 0) return
     
     if (validLocations.length === 1) {
-      map.setView([validLocations[0].lat, validLocations[0].lng], 13)
+      map.setView([validLocations[0].lat, validLocations[0].lng], 13, {
+        animate: true,
+        duration: 1.3,
+        easeLinearity: 0.05
+      })
     } else {
       const bounds = L.latLngBounds(validLocations.map(loc => [loc.lat, loc.lng]))
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 })
+      map.fitBounds(bounds, { 
+        padding: [50, 50], 
+        maxZoom: 15,
+        animate: true,
+        duration: 1.3,
+        easeLinearity: 0.05
+      })
     }
   }, [locations, selectedLocation, map])
   
@@ -59,6 +74,11 @@ function FitBounds({ locations, selectedLocation }: { locations: Delivery[]; sel
 
 export function MapComponent({ locations, selectedLocation }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
   
   // Filter valid locations (dengan koordinat yang valid)
   const validLocations = useMemo(() => {
@@ -119,7 +139,9 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
   }
 
   return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden bg-muted/20">
+    <div className={`relative w-full h-full rounded-lg overflow-hidden bg-muted/20 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] transform ${
+      isVisible ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-full opacity-0 scale-95'
+    }`}>
       <MapContainer
         ref={mapRef}
         center={defaultCenter}
@@ -178,10 +200,14 @@ export function MapComponent({ locations, selectedLocation }: MapComponentProps)
       <button 
         onClick={() => {
           if (mapRef.current) {
-            mapRef.current.setView(defaultCenter, 10)
+            mapRef.current.setView(defaultCenter, 10, {
+              animate: true,
+              duration: 1.5,
+              easeLinearity: 0.05
+            })
           }
         }}
-        className="absolute top-4 right-4 z-[1000] bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        className="absolute top-4 right-4 z-[1000] bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-500 ease-out hover:scale-110 hover:translate-x-[-4px] hover:shadow-2xl"
         title="Reset zoom"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

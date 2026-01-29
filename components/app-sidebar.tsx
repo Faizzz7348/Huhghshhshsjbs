@@ -81,6 +81,12 @@ const data = {
       items: [],
     },
     {
+      title: "Calendar",
+      url: "/calendar",
+      icon: Calendar,
+      items: [],
+    },
+    {
       title: "Route List",
       url: "#",
       icon: MapPin,

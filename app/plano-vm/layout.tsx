@@ -69,7 +69,7 @@ export default function PlanoVMLayout({
 
         <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Page Tabs */}
-          <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-2">
             <div className="flex items-center gap-2 py-3 px-4">
               {tabs.map((tab) => (
                 <Link key={tab.id} href={tab.href}>

@@ -10,7 +10,8 @@ export function ThemeColor() {
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
     
     if (metaThemeColor) {
-      const color = resolvedTheme === "dark" ? "#0d1117" : "#fafbfc"
+      // Update color based on theme - dark mode uses darker color, light mode uses lighter color
+      const color = resolvedTheme === "dark" ? "#020817" : "#ffffff"
       metaThemeColor.setAttribute("content", color)
     }
   }, [resolvedTheme])
