@@ -553,7 +553,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
           </DropdownMenu>
         </div>
         <div className="overflow-x-auto overflow-y-auto max-h-[400px] bg-muted/10 dark:bg-muted/5 transition-all duration-300 ease-in-out">
-        <table className="w-full caption-bottom text-sm relative min-w-max">
+        <table className="w-auto caption-bottom text-sm relative">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b sticky top-0 z-[30]">
@@ -561,12 +561,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                   return (
                     <th 
                       key={header.id} 
-                      className="h-11 px-4 text-center align-middle font-bold text-sm text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl" 
-                      style={{ 
-                        width: header.column.getSize(),
-                        minWidth: header.column.getSize(),
-                        maxWidth: header.column.getSize(),
-                      }}
+                      className="h-11 px-4 text-center align-middle font-bold text-sm text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl whitespace-nowrap"
                     >
                       {header.isPlaceholder
                         ? null
@@ -601,12 +596,9 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                       {row.getVisibleCells().map((cell) => (
                         <td 
                           key={cell.id} 
-                          className="p-3 align-middle text-center text-xs font-medium"
+                          className="p-3 align-middle text-center text-xs font-medium whitespace-nowrap"
                           style={{ 
                             height: rowHeight,
-                            width: cell.column.getSize(),
-                            minWidth: cell.column.getSize(),
-                            maxWidth: cell.column.getSize(),
                           }}
                         >
                           {flexRender(
