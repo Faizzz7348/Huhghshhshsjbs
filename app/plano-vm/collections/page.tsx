@@ -33,7 +33,7 @@ export default function CollectionsPage() {
   ]
 
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 p-4 pt-6">
       <div className="px-4 mb-6">
         <div className="flex items-center justify-between">
           <div>

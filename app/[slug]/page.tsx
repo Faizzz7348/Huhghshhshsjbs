@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -21,7 +22,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Map, MapPin } from "lucide-react"
 import dynamic from "next/dynamic"
 import { DataTable } from "@/components/data-table"
 import { Delivery } from "@/app/data"
@@ -45,12 +45,15 @@ import {
 } from "@/components/ui/select"
 
 const MapComponent = dynamic(
-  () => import("@/components/map-component").then((mod) => mod.MapComponent),
+  () => import("@/components/map-component").then(mod => ({ default: mod.MapComponent })),
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[500px] items-center justify-center rounded-lg border bg-muted">
-        <p className="text-muted-foreground">Loading map...</p>
+      <div className="flex h-full w-full items-center justify-center bg-muted/50 animate-pulse">
+        <div className="text-center space-y-2">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-muted-foreground">Loading map...</p>
+        </div>
       </div>
     ),
   }
@@ -77,9 +80,12 @@ export default function RoutePage() {
   const [isLoading, setIsLoading] = useState(true)
   const duplicateCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     showPageLoading(`Opening Route ${slug.toUpperCase()}`, 1000)
     setTimeout(() => setMounted(true), 1000)
+    
+    // Preload map component
+    import("@/components/map-component")
   }, [showPageLoading, slug])
 
   // Fetch data from database
@@ -315,39 +321,21 @@ export default function RoutePage() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setShowMap(!showMap)}
-              className={`transition-colors ${
-                showMap 
-                  ? 'text-primary hover:text-primary/80 border-primary/30' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title={showMap ? 'Hide Map' : 'Show Map'}
-            >
-              {showMap ? (
-                <MapPin className="h-5 w-5" />
-              ) : (
-                <Map className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
           <ModeToggle />
         </header>
-        <div className="flex flex-1 flex-col p-4 overflow-y-auto">
+        <div className="flex flex-1 flex-col p-4 pt-6 overflow-y-auto">
           <div className="flex flex-1 flex-col gap-2">
-          {showMap && (
-            <div 
-              className="overflow-hidden mb-2 shadow-lg rounded-lg"
-              style={{ 
-                height: "450px"
-              }}
-            >
+          <div 
+            className={`overflow-hidden shadow-lg rounded-lg transition-all duration-500 ease-in-out will-change-transform ${
+              showMap 
+                ? 'mb-2 opacity-100 translate-y-0 h-[450px]' 
+                : 'opacity-0 -translate-y-4 h-0 mb-0 pointer-events-none'
+            }`}
+          >
+            <div className="h-full">
               <MapComponent locations={deliveryData} selectedLocation={selectedLocation} />
             </div>
-          )}
+          </div>
 
           <div>
             {isLoading ? (
@@ -366,6 +354,7 @@ export default function RoutePage() {
                 currentRouteSlug={slug}
                 currentRouteId={routeId}
                 showMap={showMap}
+                onToggleMap={() => setShowMap(!showMap)}
                 routeDescription={routeDescription}
               />
             )}

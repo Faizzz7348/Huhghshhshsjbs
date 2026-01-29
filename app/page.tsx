@@ -56,7 +56,7 @@ export default function Home() {
           </Breadcrumb>
           <ModeToggle />
         </header>
-        <div className="flex flex-1 flex-col p-4 pt-8 overflow-y-auto">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-6 overflow-y-auto">
           <div className="flex flex-1 flex-col gap-6">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-1 bg-primary rounded-full" />

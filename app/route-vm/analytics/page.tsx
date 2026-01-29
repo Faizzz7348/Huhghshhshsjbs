@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
   ]
 
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 p-4 pt-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">Analytics</h2>
         <p className="text-sm text-muted-foreground">Track your route performance and metrics</p>

@@ -48,7 +48,7 @@ export default function RoutesPage() {
   ]
 
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 p-4 pt-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">All Routes</h2>

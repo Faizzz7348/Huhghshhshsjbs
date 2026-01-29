@@ -13,7 +13,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Info, Power, Minus, Plus, Settings, Edit, Trash2, Map, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -124,10 +124,11 @@ interface DataTableProps {
   currentRouteSlug?: string
   currentRouteId?: number
   showMap?: boolean
+  onToggleMap?: () => void
   routeDescription?: string
 }
 
-export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAddRow, onPowerModeChange, onMoveComplete, currentRouteSlug, currentRouteId, showMap = true, routeDescription }: DataTableProps) {
+export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAddRow, onPowerModeChange, onMoveComplete, currentRouteSlug, currentRouteId, showMap = true, onToggleMap, routeDescription }: DataTableProps) {
   'use no memo'
   
   const { isEditMode } = useEditMode()
@@ -495,11 +496,31 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
     <div className="w-full">
       <div className="rounded-md border bg-card overflow-hidden shadow-sm">
         {/* Table Toolbar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/20 dark:bg-muted/10">
+        <div className="flex items-center justify-between px-4 py-3 bg-muted/20 dark:bg-muted/10">
           <div>
             <p className="text-xs text-muted-foreground">{(table.options.meta as any)?.routeDescription || 'Manage and view route details'}</p>
           </div>
-          <DropdownMenu open={settingsDropdownOpen} onOpenChange={setSettingsDropdownOpen}>
+          <div className="flex items-center gap-2">
+            {onToggleMap && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onToggleMap}
+                className={`h-10 w-10 transition-all duration-200 ease-in-out ${
+                  showMap 
+                    ? 'text-primary hover:text-primary/80 border-primary/30 bg-primary/5' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`}
+                title={showMap ? 'Hide Map' : 'Show Map'}
+              >
+                {showMap ? (
+                  <MapPin className="h-5 w-5 transition-transform duration-200 ease-in-out" />
+                ) : (
+                  <Map className="h-5 w-5 transition-transform duration-200 ease-in-out" />
+                )}
+              </Button>
+            )}
+            <DropdownMenu open={settingsDropdownOpen} onOpenChange={setSettingsDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
@@ -551,17 +572,18 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
-        <div className="overflow-x-auto overflow-y-auto max-h-[400px] bg-muted/10 dark:bg-muted/5 transition-all duration-300 ease-in-out">
-        <table className="min-w-full w-auto caption-bottom text-sm relative" style={{ tableLayout: 'auto' }}>
+        <div className="overflow-x-auto overflow-y-auto bg-muted/10 dark:bg-muted/5 transition-all duration-300 ease-in-out" style={{ maxHeight: showMap ? `${8 * rowHeight + 44}px` : `${13 * rowHeight + 44}px` }}>
+        <table className="min-w-full w-auto caption-bottom text-xs relative" style={{ tableLayout: 'auto' }}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b sticky top-0 z-[30]">
+              <tr key={headerGroup.id} className="sticky top-0 z-[30]">
                 {headerGroup.headers.map((header) => {
                   return (
                     <th 
                       key={header.id} 
-                      className="h-11 px-4 text-center align-middle font-bold text-sm text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl whitespace-nowrap"
+                      className="h-11 px-4 text-center align-middle font-bold text-xs text-foreground bg-muted/30 dark:bg-muted/20 backdrop-blur-xl whitespace-nowrap"
                     >
                       {header.isPlaceholder
                         ? null
@@ -575,7 +597,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
               </tr>
             ))}
           </thead>
-          <tbody className="text-xs">
+          <tbody>
             {table.getRowModel().rows?.length ? (
               <>
                 {table.getRowModel().rows.map((row, rowIndex) => {
@@ -596,7 +618,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                       {row.getVisibleCells().map((cell) => (
                         <td 
                           key={cell.id} 
-                          className="p-3 align-middle text-center text-xs font-medium whitespace-nowrap"
+                          className="px-3 py-2 align-middle text-center text-[11px] font-normal whitespace-nowrap"
                           style={{ 
                             height: rowHeight,
                           }}
@@ -614,7 +636,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                 {isEditMode && (
                   <tr 
                     onClick={() => setAddRowDialogOpen(true)}
-                    className="group cursor-pointer border-t-2 border-dashed border-primary/30 hover:border-primary/60 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 hover:from-primary/10 hover:via-primary/15 hover:to-primary/10 transition-all duration-300 ease-in-out"
+                    className="group cursor-pointer bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 hover:from-primary/10 hover:via-primary/15 hover:to-primary/10 transition-all duration-300 ease-in-out"
                   >
                     <td 
                       colSpan={columns.length}
@@ -622,9 +644,9 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                       style={{ height: rowHeight }}
                     >
                       <div className="flex items-center justify-center gap-2 text-primary group-hover:text-primary/80 transition-colors">
-                        <Plus className="h-5 w-5 animate-pulse group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-semibold tracking-wide">Add New Row</span>
-                        <Plus className="h-5 w-5 animate-pulse group-hover:scale-110 transition-transform" />
+                        <Plus className="h-4 w-4 animate-pulse group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium tracking-wide">Add New Row</span>
+                        <Plus className="h-4 w-4 animate-pulse group-hover:scale-110 transition-transform" />
                       </div>
                     </td>
                   </tr>
@@ -644,7 +666,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                 {isEditMode && (
                   <tr 
                     onClick={() => setAddRowDialogOpen(true)}
-                    className="group cursor-pointer border-t-2 border-dashed border-primary/30 hover:border-primary/60 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 hover:from-primary/10 hover:via-primary/15 hover:to-primary/10 transition-all duration-300 ease-in-out"
+                    className="group cursor-pointer bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 hover:from-primary/10 hover:via-primary/15 hover:to-primary/10 transition-all duration-300 ease-in-out"
                   >
                     <td 
                       colSpan={columns.length}
@@ -652,9 +674,9 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                       style={{ height: rowHeight }}
                     >
                       <div className="flex items-center justify-center gap-2 text-primary group-hover:text-primary/80 transition-colors">
-                        <Plus className="h-5 w-5 animate-pulse group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-semibold tracking-wide">Add New Row</span>
-                        <Plus className="h-5 w-5 animate-pulse group-hover:scale-110 transition-transform" />
+                        <Plus className="h-4 w-4 animate-pulse group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium tracking-wide">Add New Row</span>
+                        <Plus className="h-4 w-4 animate-pulse group-hover:scale-110 transition-transform" />
                       </div>
                     </td>
                   </tr>
@@ -665,11 +687,11 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
         </table>
       </div>
         {/* Table Footer */}
-        <div className="border-t border-border bg-muted/30 dark:bg-muted/20 px-4 py-3">
-          <div className="flex items-center justify-end text-sm">
+        <div className="bg-muted/30 dark:bg-muted/20 px-4 py-3">
+          <div className="flex items-center justify-end text-xs">
             <div className="flex items-center gap-2 text-muted-foreground">
               <span className="font-semibold text-foreground">{tableData.length}</span>
-              <span className="font-medium">Locations</span>
+              <span className="font-normal">Locations</span>
             </div>
           </div>
         </div>
@@ -692,6 +714,7 @@ export function DataTable({ data, onLocationClick, onEditRow, onDeleteRow, onAdd
                     id={col.id}
                     checked={col.visible}
                     onCheckedChange={() => toggleColumnVisibility(col.id)}
+                    className="h-3.5 w-3.5"
                   />
                   <Label htmlFor={col.id} className="cursor-pointer font-normal text-sm">
                     {col.label}

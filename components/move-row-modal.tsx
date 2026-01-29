@@ -205,23 +205,23 @@ export function MoveRowModal({
           </div>
 
           {/* Data Table with improved styling */}
-          <div className="max-h-[calc(85vh-220px)] overflow-auto border-2 rounded-lg shadow-sm">
+          <div className="max-h-[280px] overflow-auto border-2 rounded-lg shadow-sm">
             <Table>
               <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm z-10">
                 <TableRow className="h-10">
-                  <TableHead className="w-14 py-2 text-center">
+                  <TableHead className="w-[80px] py-2 text-center">
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={isAllSelected}
                         onCheckedChange={handleSelectAll}
                         aria-label="Select all"
-                        className="h-4 w-4"
+                        className="h-3.5 w-3.5"
                       />
                     </div>
                   </TableHead>
-                  <TableHead className="w-20 font-semibold text-[11px] py-2 text-center">Code</TableHead>
-                  <TableHead className="font-semibold text-[11px] py-2 text-center">Location</TableHead>
-                  <TableHead className="w-28 font-semibold text-[11px] py-2 text-center">Delivery</TableHead>
+                  <TableHead className="w-[110px] font-semibold text-sm py-2 text-center">Code</TableHead>
+                  <TableHead className="font-semibold text-sm py-2 text-center">Location</TableHead>
+                  <TableHead className="w-[130px] font-semibold text-sm py-2 text-center">Delivery</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -249,14 +249,14 @@ export function MoveRowModal({
                               handleSelectRow(row.id, checked as boolean)
                             }
                             aria-label={`Select row ${row.code}`}
-                            className="h-4 w-4"
+                            className="h-3.5 w-3.5"
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium text-[11px] py-2 text-center">{row.code}</TableCell>
-                      <TableCell className="text-[11px] py-2 leading-tight text-center">{row.location}</TableCell>
+                      <TableCell className="font-medium text-[13px] py-2 text-center">{row.code}</TableCell>
+                      <TableCell className="text-[13px] py-2 leading-tight text-center">{row.location}</TableCell>
                       <TableCell className="py-2 text-center">
-                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-medium bg-muted leading-none">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium bg-muted leading-none">
                           {row.delivery}
                         </span>
                       </TableCell>
