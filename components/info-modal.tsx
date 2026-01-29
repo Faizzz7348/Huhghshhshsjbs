@@ -340,14 +340,10 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                 if (!code || code.toString().trim() === '') return null
                 const isNumeric = /^\d+$/.test(code.toString().trim())
                 if (!isNumeric) return null
-                const formattedCode = code.toString().trim().padStart(4, '0')
-                const familyMartLink = `https://fmvending.web.app/refill-service/M${formattedCode}`
                 
                 return (
-                  <a
-                    href={familyMartLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handleShortcutClick('familymart')}
                     className="shortcut-icon-only"
                     title="FamilyMart Refill"
                   >
@@ -358,7 +354,7 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                       height={48}
                       className="shortcut-icon-img"
                     />
-                  </a>
+                  </button>
                 )
               })()}
               
@@ -371,18 +367,10 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                 if (!isValidLat || !isValidLng) return null
                 
                 return (
-                  <a
-                    href={googleMapsLink || `https://www.google.com/maps/search/?api=1&query=${rowData.lat},${rowData.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handleShortcutClick('googlemaps')}
                     className="shortcut-icon-only"
                     title="Google Maps"
-                    onClick={(e) => {
-                      if (actualEditMode) {
-                        e.preventDefault()
-                        handleShortcutClick('googlemaps')
-                      }
-                    }}
                   >
                     <Image 
                       src="/Gmaps.png" 
@@ -394,7 +382,7 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     {actualEditMode && (
                       <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )}
-                  </a>
+                  </button>
                 )
               })()}
               
@@ -407,18 +395,10 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                 if (!isValidLat || !isValidLng) return null
                 
                 return (
-                  <a
-                    href={wazeLink || `https://www.waze.com/ul?ll=${rowData.lat},${rowData.lng}&navigate=yes`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handleShortcutClick('waze')}
                     className="shortcut-icon-only"
                     title="Waze"
-                    onClick={(e) => {
-                      if (actualEditMode) {
-                        e.preventDefault()
-                        handleShortcutClick('waze')
-                      }
-                    }}
                   >
                     <Image 
                       src="/waze_app_icon-logo_brandlogos.net_l82da.png" 
@@ -430,33 +410,23 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
                     {actualEditMode && (
                       <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )}
-                  </a>
+                  </button>
                 )
               })()}
               
               {/* Website Link Button */}
               {(websiteLink || actualEditMode) && (
                 <button
-                  onClick={() => {
-                    if (!actualEditMode && websiteLink) {
-                      let url = websiteLink
-                      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                        url = 'https://' + url
-                      }
-                      window.open(url, '_blank')
-                    } else {
-                      handleShortcutClick('website')
-                    }
-                  }}
-                  className={`shortcut-btn shortcut-website ${!websiteLink && actualEditMode ? 'opacity-50' : ''}`}
+                  onClick={() => handleShortcutClick('website')}
+                  className="shortcut-icon-only"
+                  title={websiteLink ? 'Website' : 'Add Website'}
                 >
-                  <ExternalLink className="h-4 w-4" />
-                  <span className="shortcut-label">{websiteLink ? 'Website' : 'Add Website'}</span>
+                  <ExternalLink className="h-10 w-10 p-2 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors" />
                   {actualEditMode && (
                     websiteLink ? (
-                      <Pencil className="h-3.5 w-3.5 ml-1" />
+                      <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     ) : (
-                      <Plus className="h-3.5 w-3.5 ml-1" />
+                      <Plus className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )
                   )}
                 </button>
@@ -465,28 +435,24 @@ export function InfoModal({ visible, onHide, rowData, onSave, isEditMode = false
               {/* QR Code Button */}
               {(qrCodeImageUrl || actualEditMode) && (
                 <button
-                  onClick={() => {
-                    if (!actualEditMode && qrCodeDestinationUrl) {
-                      window.open(qrCodeDestinationUrl, '_blank')
-                    } else {
-                      handleShortcutClick('qrcode')
-                    }
-                  }}
-                  className={`shortcut-btn shortcut-qr ${!qrCodeImageUrl && actualEditMode ? 'opacity-50' : ''}`}
+                  onClick={() => handleShortcutClick('qrcode')}
+                  className="shortcut-icon-only"
+                  title={qrCodeImageUrl ? 'QR Code' : 'Add QR Code'}
                 >
-                  <Image 
-                    src="/QRcodewoi.png" 
-                    alt="QR Code" 
-                    width={20}
-                    height={20}
-                    className="shortcut-icon-img"
-                  />
-                  <span className="shortcut-label">{qrCodeImageUrl ? 'QR Code' : 'Add QR Code'}</span>
+                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-orange-500 hover:bg-orange-600 transition-colors">
+                    <Image 
+                      src="/QRcodewoi.png" 
+                      alt="QR Code" 
+                      width={24}
+                      height={24}
+                      className="shortcut-icon-img"
+                    />
+                  </div>
                   {actualEditMode && (
                     qrCodeImageUrl ? (
-                      <Pencil className="h-3.5 w-3.5 ml-1" />
+                      <Pencil className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     ) : (
-                      <Plus className="h-3.5 w-3.5 ml-1" />
+                      <Plus className="h-3.5 w-3.5 absolute -top-1 -right-1 bg-background rounded-full p-0.5" />
                     )
                   )}
                 </button>

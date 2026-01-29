@@ -82,9 +82,12 @@
 
 .shortcuts-buttons-grid {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px;
 }
 
 .shortcut-btn {
@@ -130,6 +133,8 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+    position: relative;
+    flex-shrink: 0;
 }
 
 .shortcut-icon-only:hover {
@@ -213,13 +218,26 @@
     }
     
     .shortcuts-buttons-grid {
-        flex-direction: column;
-        gap: 10px;
+        justify-content: flex-start;
+        gap: 12px;
+        padding-bottom: 8px;
     }
     
-    .shortcut-btn {
-        width: 100%;
-        font-size: 12px;
-        padding: 10px 14px;
+    .shortcuts-buttons-grid::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .shortcuts-buttons-grid::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
+    
+    .shortcuts-buttons-grid::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+    }
+    
+    .shortcuts-buttons-grid::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.5);
     }
 }
